@@ -7,7 +7,7 @@ Overview of stMVC model. (A) Given each SRT data with four-layer profiles: histo
 
 stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possible. DCCA requires python 3.6.12, and torch 1.6.0. The used packages (described by "used_package.txt") for stMVC can be automatically installed.
 
-* git clone git://github.com/cmzuo11/DCCA.git
+* git clone https://github.com/cmzuo11/stMVC.git
 
 * cd stMVC
 
