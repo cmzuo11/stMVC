@@ -8,7 +8,7 @@ scanpy>=1.6.0
 stlearn
 sklearn
 matplotlib
-glob
+glob2
 json
 PIL
 cv2
