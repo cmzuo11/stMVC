@@ -285,40 +285,6 @@ class CrossViewAttentionLayer(Module):
 
 		return self.leakyrelu(e)
 
-	def fit_mode(self, args, mu1 = None, mu2 = None, class_label = None, training = None ):
-
-		optimizer    = optim.Adam(self.parameters(), lr=args.lr_crossView)
-		train_bar    = tqdm(range(args.max_epoch_T))
-		epoch        = 0
-		record_loss  = 0
-		train_loss   = []
-
-		self.train()
-
-		for index in train_bar:
-			epoch = epoch + 1
-			t     = time.time()
-			optimizer.zero_grad()
-
-			lamda1, mu_robust1, class_prediction = self.inference( mu1, mu2 )
-			classify_loss  = supervised_multiple_loss_function( class_prediction,  class_label, training)
-
-			classify_loss  = 100 * classify_loss
-			classify_loss.backward()
-			optimizer.step()
-
-			train_bar.set_description('Train Epoch: [{}/{}] classify_loss: {:.4f} time: {:.4f}'.format(epoch, 
-									  args.max_epoch_T, classify_loss.item(), (time.time() - t) ))
-
-			train_loss.append( classify_loss.item() )
-
-		self.eval()
-
-		print( lamda1[:10,:].tolist() )
-
-		return sum(train_loss)/len(train_loss)
-
-
 class Integrate_multiple_view_model(Module):
 
 	def __init__(self, NFeature, nClass, dropout, alpha = 0.2, type = "Mean"):
@@ -349,40 +315,6 @@ class Integrate_multiple_view_model(Module):
 		rep, class_prediction = self.inference_mean( h1, h2 )
 
 		return torch.ones(rep.size(0), 3).cuda(), rep, class_prediction
-
-	def fit_mode(self, args, mu1 = None, mu2 = None,
-		         class_label = None, training = None ):
-
-		optimizer    = optim.Adam(self.parameters(), lr=args.lr_crossView)
-		train_bar    = tqdm(range(args.max_epoch_T))
-		epoch        = 0
-		record_loss  = 0
-		train_loss   = []
-
-		self.train()
-
-		for index in train_bar:
-			epoch = epoch + 1
-			t     = time.time()
-			optimizer.zero_grad()
-
-			rep, class_prediction = self.inference_mean( mu1, mu2 )
-
-			classify_loss         = supervised_multiple_loss_function( class_prediction, class_label, training)
-
-			classify_loss         = 100 * classify_loss
-			classify_loss.backward()
-			optimizer.step()
-
-			train_bar.set_description('Train Epoch: [{}/{}] classify_loss: {:.4f} time: {:.4f}'.format(epoch, 
-									  args.max_epoch_T, classify_loss.item(), (time.time() - t) ))
-
-			train_loss.append( classify_loss.item() )
-
-		self.eval()
-
-		return sum(train_loss)/len(train_loss)
-
 
 class GraphConvolution(Module):
 	"""
