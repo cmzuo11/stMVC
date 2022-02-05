@@ -1,1 +1,1 @@
-Example test files for slice 151673 of DLPFC dataset.
+Example test files for slice 151673 can be downloaded from link:.
