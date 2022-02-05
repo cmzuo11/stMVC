@@ -18,33 +18,39 @@ import torch.utils.data as data_utils
 
 from torch import optim
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 from stMVC.modules   import AE, gat, resnet50_model, simCLR_model, Cross_Views_attention_integrate
-from stMVC.utilities import load_calAdj_feature_data, normalize, preprocess_graph, read_dataset, load_calLocation_feature_data
+from stMVC.utilities import load_calAdj_feature_data, normalize, preprocess_graph, load_calLocation_feature_data
 
-def RNA_encoding_train(args, RNA_file = None, outDir = "results"):
+def RNA_encoding_train(args, adata = None, outDir = None, test_size_prop = 0.1):
 
 	args.batch_size_T   = 128
 	args.epoch_per_test = 10
-	args.use_cuda       = args.use_cuda and torch.cuda.is_available()
 
-	adata, train_index, test_index, _ = read_dataset( File1 = RNA_file, transpose = True, test_size_prop = 0.1 )
+	if test_size_prop > 0 :
+		train_index, test_index = train_test_split(np.arange(adata.n_obs), 
+											       test_size    = test_size_prop, 
+											       random_state = 200)
+	else:
+		train_index, test_index = list(range( adata.n_obs )), list(range( adata.n_obs ))
+			
 	adata  = normalize( adata, filter_min_counts=True, size_factors=True,
 						normalize_input=False, logtrans_input=True ) 
 	
 	Nsample1, Nfeature1 =  np.shape( adata.X )
 
-	train           = data_utils.TensorDataset( torch.from_numpy( adata[train_index].X ),
-												torch.from_numpy( adata.raw[train_index].X ), 
+	train           = data_utils.TensorDataset( torch.from_numpy( sp.csr_matrix.toarray(adata[train_index].X) ),
+												torch.from_numpy( sp.csr_matrix.toarray(adata[train_index].X) ), 
 												torch.from_numpy( adata.obs['size_factors'][train_index].values ) )
 	train_loader    = data_utils.DataLoader( train, batch_size = args.batch_size_T, shuffle = True )
 
-	test            = data_utils.TensorDataset( torch.from_numpy( adata[test_index].X ),
-												torch.from_numpy( adata.raw[test_index].X ), 
+	test            = data_utils.TensorDataset( torch.from_numpy( sp.csr_matrix.toarray(adata[test_index].X) ),
+												torch.from_numpy( sp.csr_matrix.toarray(adata[test_index].X) ), 
 												torch.from_numpy( adata.obs['size_factors'][test_index].values ) )
 	test_loader     = data_utils.DataLoader( test, batch_size = len(test_index), shuffle = False )
 
-	total           = data_utils.TensorDataset( torch.from_numpy( adata.X ),
+	total           = data_utils.TensorDataset( torch.from_numpy( sp.csr_matrix.toarray(adata.X) ),
 												torch.from_numpy( adata.obs['size_factors'].values ) )
 	total_loader    = data_utils.DataLoader( total, batch_size = args.batch_size_T, shuffle = False )
 
@@ -112,8 +118,7 @@ def training_single_view_graph(args, rna_data, adj_orig, adj_train, test_E, test
 
 
 def Multi_views_attention_train(args, image_rep_file = None, RNA_file = None, image_loc_file = None, 
-								class_file1 = None, outDir = "results", integrate_type = "Attention",
-								select_prop = 0.7 ):
+								class_file1 = None, outDir = "results", integrate_type = "Attention" ):
 
 	class_data1  = pd.read_csv(class_file1, header = 0, index_col = 0)
 	cc           = class_data1.values[:,2]>0
@@ -155,5 +160,5 @@ def Multi_views_attention_train(args, image_rep_file = None, RNA_file = None, im
 								   '/{}_2-view_lamda_coefficients.csv'.format( "GAT" ) ) 
 
 	data_frame  = pd.DataFrame(data=class_prediction.data.cpu().numpy(), index=rna_data1.index ).to_csv( outDir + 
-							   '/{}_2-view_class_prediction.csv'.format( "GAT" ) )
+							   '/{}_2-view_class_prediction.csv'.format( "GAT" ) ) 
 
