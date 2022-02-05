@@ -19,34 +19,48 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import scipy.sparse as sp
+#import stlearn as st
 
+from sklearn.cluster import KMeans
+from sklearn import mixture
+from sklearn.decomposition import PCA
 from sklearn.metrics import roc_auc_score, average_precision_score, pairwise_distances
+from sklearn import metrics
+from sklearn.metrics.cluster import normalized_mutual_info_score
 
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, scale
 from sklearn.model_selection import train_test_split
 from scipy.spatial.distance import cosine
 
+
 def parameter_setting():
 	
-	parser      = argparse.ArgumentParser(description='Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning')
+	parser      = argparse.ArgumentParser(description='Spatial transcriptomics analysis')
+	
+	inputPath   = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/'
+	TillingPath = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/tmp/'
+
+	outPath     = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/CMSSL/'
 	
 	parser.add_argument('--inputPath',   '-IP', type = str, default = inputPath,    help='data directory')
 	parser.add_argument('--tillingPath', '-TP', type = str, default = TillingPath,  help='image data directory')
+	
 	parser.add_argument('--outPath', '-od', type=str, default = outPath, help='Output path')
 	
 	parser.add_argument('--weight_decay', type=float, default = 1e-6, help='weight decay')
 	parser.add_argument('--eps', type=float, default = 0.01, help='eps')
 
-	parser.add_argument('--cluster_pre', '-clup', type=int, default=18, help='predefined cluster for scRNA')
+	parser.add_argument('--cluster_pre', '-clup', type=int, default=7, help='predefined cluster for scRNA')
 	parser.add_argument('--geneClu', '-gClu', type=list, default = None, help='predefined gene cluster for scRNA')
 	parser.add_argument('--beta_pa', '-bePa', type=float, default = 0.0005, help='parameter for robust representation loss')
 	
 	parser.add_argument('--batch_size_T', '-bT', type=int, default=128, help='Batch size for transcriptomics data')
+
 	parser.add_argument('--batch_size_I', '-bI', type=int, default=128, help='Batch size for spot image data')
 	parser.add_argument('--image_size', '-iS', type=int, default=32, help='image size for spot image data')
 
-	parser.add_argument('--latent_T1', '-lT1',type=int, default=36, help='Feature dim1 for latent vector for transcriptomics data')
-	parser.add_argument('--latent_T2', '-lT2',type=int, default=18, help='Feature dim2 for latent vector for transcriptomics data')
+	parser.add_argument('--latent_T1', '-lT1',type=int, default=25, help='Feature dim1 for latent vector for transcriptomics data')
+	parser.add_argument('--latent_T2', '-lT2',type=int, default=10, help='Feature dim2 for latent vector for transcriptomics data')
 	parser.add_argument('--latent_I', '-lI',type=int, default=128, help='Feature dim for latent vector for spot image data')
 
 	parser.add_argument('--max_epoch_T', '-meT', type=int, default=500, help='Max epoches for transcriptomics data')
@@ -55,9 +69,9 @@ def parameter_setting():
 
 	parser.add_argument('--lr_T1', type=float, default = 0.002, help='Learning rate for GCN constructed by vision')
 	parser.add_argument('--lr_T2', type=float, default = 0.002, help='Learning rate for GCN constructed by transcriptomics data')
-	parser.add_argument('--lr_T3', type=float, default = 0.002, help='Learning rate for multiple view collaborative')
-	parser.add_argument('--lr_VAET', type=float, default = 8e-05, help='Learning rate for transcriptomics data for VAE model')
-	parser.add_argument('--lr_VAET_F', type=float, default = 8e-06, help='final learning rate for transcriptomics data for VAE model')
+	parser.add_argument('--lr_T3', type=float, default = 0.002, help='Learning rate for GCN constructed by transcriptomics data')
+	parser.add_argument('--lr_AET', type=float, default = 8e-05, help='Learning rate for transcriptomics data for AE model')
+	parser.add_argument('--lr_AET_F', type=float, default = 0.00001, help='final learning rate for transcriptomics data for AE model')
 	parser.add_argument('--lr_I', type=float, default = 0.0001, help='Learning rate for spot image data')
 	parser.add_argument('--lr_crossView', type=float, default = 0.05, help='Learning rate for spot image data')
 
@@ -65,6 +79,8 @@ def parameter_setting():
 	parser.add_argument('--image_model', '-imageModel', type=str, default = 'AE', help='extract image information')
 	parser.add_argument('--graph_model', '-graphModel', type=str, default = 'GAT', help='graph attention model (GAT or GCN)')
 	parser.add_argument('--attention_head', '-attentionHead', type=int, default = 2, help='the number of attention heads (GAT or GCN)')
+	parser.add_argument('--fusion_type', '-fusionType', type=str, default = "Attention", help='the type of multi-view graph fusion')
+
 
 	parser.add_argument('--use_cuda', dest='use_cuda', default=True, action='store_true', help=" whether use cuda(default: True)")
 	
@@ -106,6 +122,7 @@ def read_dataset( File1 = None, File2 = None,  transpose = True, test_size_prop 
 
 			Data2 = pd.read_csv( File2, header=0, index_col=0 )
 			## preprocessing for latter evaluation
+
 			group = Data2['Group'].values
 
 			for g in group:
@@ -231,14 +248,16 @@ def load_calLocation_feature_data( spot_loc_file: str   = None,
 								   training: int        = None ):
 
 	if rna_file.find('csv') != -1:
-		rna_exp    =  pd.read_csv(rna_file, header = 0, index_col = 0)
+		rna_exp  = pd.read_csv(rna_file, header = 0, index_col = 0)
 	else:
-		rna_exp    =  pd.read_table(rna_file, header = 0, index_col = 0)
+		rna_exp  = pd.read_table(rna_file, header = 0, index_col = 0)
 
-	image_loc      =  pd.read_csv(spot_loc_file, header = 0, index_col = 0)
-	aa             = rna_exp.index.values.tolist()
-	bb             = image_loc.index.values.tolist()
-	match_index    = [ bb.index(x) if x in bb else None for x in  aa ]
+	image_loc    = pd.read_csv(spot_loc_file, header = 0, index_col = 0)
+
+	aa           = rna_exp.index.values.tolist()
+	bb           = image_loc.index.values.tolist()
+
+	match_index  = [ bb.index(x) if x in bb else None for x in  aa ]
 
 	if training is not None:
 		dist_out = pairwise_distances(image_loc.values[match_index,:][training,:], metric = disatnce_method)
@@ -262,9 +281,7 @@ def load_calLocation_feature_data( spot_loc_file: str   = None,
 	adj_orig   = adj_orig - sp.dia_matrix((adj_orig.diagonal()[np.newaxis, :], [0]), shape=adj_orig.shape)
 
 	adj_orig.eliminate_zeros()
-
 	adj_train, train_edges, test_edges, test_edges_false = mask_test_edges(adj, test_pro = test_prop)
-
 	return rna_exp, adj_orig, adj_train, train_edges, test_edges, test_edges_false
 
 def mask_test_edges(adj, test_pro = 0.1, val_pro = 0.2):
@@ -345,6 +362,29 @@ def mask_test_edges(adj, test_pro = 0.1, val_pro = 0.2):
 
 	# NOTE: these edge lists only contain single direction of edge!
 	return adj_train, train_edges, test_edges, test_edges_false
+
+
+def evaluation_clustering_metrics(args, repren_file = None, class_file = None):
+
+	rep_data   = pd.read_csv(repren_file, header = 0, index_col = 0) 
+	clas_data  = pd.read_table(class_file, header = 0, index_col = 0)
+
+	training   = clas_data.values[:,1]>0
+	aa         = list(map(int, clas_data.values[:,1].tolist()))
+	aa[:]      = [x - 1 for x in aa]
+
+	kmeans     = KMeans( n_clusters = args.cluster_pre, n_init = 5, random_state = 200 )
+	ARI_score  = -100
+	NMI_score  = -100
+
+	pred_z1    = kmeans.fit_predict( rep_data.values )
+	NMI_score  = round( normalized_mutual_info_score( np.array(aa)[training].tolist(), 
+													  pred_z1[training],  average_method='max' ), 3 )
+
+	ARI_score  = round( metrics.adjusted_rand_score( np.array(aa)[training].tolist(), pred_z1[training] ), 3 )
+
+	print('clustering ARI score: ' + str(ARI_score) + ' NMI score: ' + str(NMI_score) )
+	return ARI_score, NMI_score
 
 
 def sparse_to_tuple(sparse_mx):
@@ -430,7 +470,6 @@ def save_checkpoint(model, folder='./saved_model/', filename='model_best.pth.tar
 		os.mkdir(folder)
 
 	torch.save(model.state_dict(), os.path.join(folder, filename))
-
 
 def load_checkpoint(file_path, model, use_cuda=False):
 
