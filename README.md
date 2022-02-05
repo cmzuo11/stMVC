@@ -6,7 +6,7 @@ Overview of stMVC model. a Given each spatially resolved transcriptomics (SRT) d
 
 # Installation
 
-## Install cell segmentation software
+## Install histological label software 
 
 Install labelme software based on the Github link: https://github.com/wkentaro/labelme
 
@@ -26,8 +26,6 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 
 * a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
-* manual label annotation for each spot named as 151673_annotation.csv;
-
 * the example files for the slice 151673 of DLPFC dataset are included in the Example_test/DLPFC_151673 folder.
 
 ## Run: 
@@ -45,6 +43,9 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 * GAT_2-view_model.pth: saved model for reproducing results.
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
+
+## Tutorial
+slice 151673 example of DLPFC dataset by [stMVC model](https://github.com/cmzuo11/DCCA/wiki/Analysis-of-cellMix-dataset-from-SNARE-seq-technology-by-DCCA-model), by [MOFA+, scAI, and scMVAE-PoE model](https://github.com/cmzuo11/DCCA/wiki/Analysis-of-cellMix-dataset-from-SNARE-seq-technology-by-MOFA-,-scAI,-and-scMVAE-PoE)
 
 # Reference
 
