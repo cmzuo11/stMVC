@@ -44,9 +44,6 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
-## Tutorial
-slice 151673 example of DLPFC dataset by [stMVC model](https://github.com/cmzuo11/DCCA/wiki/Analysis-of-cellMix-dataset-from-SNARE-seq-technology-by-DCCA-model), by [MOFA+, scAI, and scMVAE-PoE model](https://github.com/cmzuo11/DCCA/wiki/Analysis-of-cellMix-dataset-from-SNARE-seq-technology-by-MOFA-,-scAI,-and-scMVAE-PoE)
-
 # Reference
 
 Chunman Zuo, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
