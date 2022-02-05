@@ -16,8 +16,8 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
-from modules import simCLR_model
-from image_processing import CustomDataset, train_transform_64, test_transform, train_transform_32
+from stMVC.modules import simCLR_model
+from stMVC.image_processing import CustomDataset, train_transform_64, test_transform, train_transform_32
 
 # train for one epoch to learn unique features
 def train(net, data_loader, train_optimizer, args):
@@ -92,7 +92,7 @@ def test(net, test_data_loader, args):
 	return total_loss / total_num
 
 
-def train_simCLR_sImage( args, outDir = "results", file_order = 1, sub_path = None, file_code = None):
+def train_simCLR_sImage( args, outDir = "results", sub_path = None, file_code = None):
 
 	latent_I, k            =  args.latent_I, args.k
 	batch_size, epochs     =  args.batch_size_I, args.max_epoch_I
@@ -104,7 +104,6 @@ def train_simCLR_sImage( args, outDir = "results", file_order = 1, sub_path = No
 
 		for z in list(range(len(file_code))):
 			temp_files    =  glob.glob( sub_path + file_code[z] + "/tmp/*.jpeg" )
-			#temp_files_f  =  [ file_code[z] + "_" + s for s in temp_files ]
 			temp_file_list.extend( temp_files )
 
 		file_list = temp_file_list
@@ -156,7 +155,7 @@ def train_simCLR_sImage( args, outDir = "results", file_order = 1, sub_path = No
 		os.mkdir( outDir )
 
 	minimum_loss    = 10000
-	file_model_save = outDir + '/{}_model-{}.pth'.format(save_name_pre, str(file_order))
+	file_model_save = outDir + '/{}_model.pth'.format(save_name_pre)
 
 	for epoch in range(1, epochs + 1):
 
@@ -180,7 +179,7 @@ def train_simCLR_sImage( args, outDir = "results", file_order = 1, sub_path = No
 	return file_model_save
 
 
-def extract_representation_simCLR_model( args, outDir = 'results', model_file = None, file_order = 1, sub_path = None, file_code = None):
+def extract_representation_simCLR_model( args, outDir = 'results', model_file = None, sub_path = None, file_code = None):
 
 	model  =  simCLR_model(args.latent_I).cuda()
 	model.load_state_dict( torch.load( model_file ) )
@@ -220,11 +219,9 @@ def extract_representation_simCLR_model( args, outDir = 'results', model_file = 
 	barcode     = np.concatenate(barcode)
 
 	save_name_pre = '{}_{}_{}_{}'.format(args.latent_I, args.temperature, args.k, args.batch_size_I)
-	save_fileName = outDir + '/{}_simCLR_reprensentation-{}.csv'.format(save_name_pre, str(file_order))
+	save_fileName = outDir + '/{}_simCLR_reprensentation.csv'.format(save_name_pre)
 
 	data_frame    = pd.DataFrame(data=feature_dim, index=barcode, columns =  list(range(1, 2049)) )
 	data_frame.to_csv( save_fileName )
 
 	return save_fileName
-
-
