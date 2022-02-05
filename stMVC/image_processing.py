@@ -117,10 +117,8 @@ def tiling(
 	copy: bool = False,
 ) -> Optional[AnnData]:
 	"""
-	adopted from stLearn
+	adopted from stLearn package
 	Tiling H&E images to small tiles based on spot spatial location
-
-	adaopted from stlearn package
 	"""
 
 	if library_id is None:
@@ -229,4 +227,3 @@ def image_segmentation_spots(adata: AnnData,
 			count_status = count_status + 1
 
 	return cell_type_dict
-
