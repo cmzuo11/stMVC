@@ -24,7 +24,9 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 
 ## Input: 
 
-* a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz.  
+* a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
+
+* manual label annotation for each spot named as 151673_annotation.csv;
 
 * the example files for the slice 151673 of DLPFC dataset are included in the Example_test/DLPFC_151673 folder.
 
@@ -38,21 +40,12 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 
 ## Output:
 
-### the output file will be saved for further analysis:
+## the output file will be saved for further analysis:
 
 * GAT_2-view_model.pth: saved model for reproducing results.
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
-## Further analysis:
+# Reference
 
-### The detailed functions (at ./stMVC/Processing_data.R) regarding how to anlayze SRT data as follows:
-
-* Select_Loci_by_vargenes: select the genomics loci based on predefined genes;
-* Plot_umap_embeddings: plot cell embeddings based on each latent feature for each omics data;
-* Calculate_TF_score: calcucate the TF score for each cell based on input scATAC-seq data;
-* Infer_network: infer TF-TG relationship based on two-omics data;
-* Generate_cell_type_regulon: construct cell-type-specific network;
-* Regulon_activity: calcualte regulon activity for each cell of each cell type;
-* Similarity_coregulated_gene: GO function similarity of co-regulated genes for the same TF;
-* ...
+Chunman Zuo, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
