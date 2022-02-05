@@ -143,7 +143,7 @@ def Multi_views_attention_train(args, image_rep_file = None, RNA_file = None, im
 		            np.array(aa), None)
 
 	save_name_pre = '{}_{}_{}_{}_{}_{}_{}_{}_{}'.format( args.latent_T1, args.latent_T2, args.max_epoch_T, 
-														 args.lr_T1, args.lr_T2, args.lr_crossView, args.beta_pa,
+														 args.lr_T1, args.lr_T2, args.lr_T3, args.beta_pa,
 														 args.knn, integrate_type )
 
 	torch.save( model.state_dict(), outDir + '/{}_{}_2-view_model_split_{}_temp_new.pth'.format(save_name_pre, "GAT", str(select_prop) ) )
