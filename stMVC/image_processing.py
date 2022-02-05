@@ -227,3 +227,4 @@ def image_segmentation_spots(adata: AnnData,
 			count_status = count_status + 1
 
 	return cell_type_dict
+
