@@ -12,21 +12,25 @@ Installation Tested on Red Hat 7.6 with Python 3.6.12 and torch 1.6.0 on a machi
 
 ### grabbing source code
 
-* git clone https://github.com/cmzuo11/stMVC.git
+```
+git clone https://github.com/cmzuo11/stMVC.git
 
-* cd stMVC
+cd stMVC
+```
 
 ### install stMVC in the virutal environment by conda
 
 The used packages (described by "used_package.txt") for stMVC can be automatically installed.
 
-* conda create -n stMVC python=3.6.12 pip
+```
+conda create -n stMVC python=3.6.12 pip
 
-* source activate
+source activate
 
-* conda activate stMVC
+conda activate stMVC
 
-* pip install -r used_package.txt
+pip install -r used_package.txt
+```
 
 ## Install histological label software (labelme) 
 
@@ -39,11 +43,11 @@ Installation tested on Windows 10 with Intel Core i7-4790 CPU, and the labelme s
 * a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
 * with the example file of slice 151673 as an example, you can download it by the following code:
-
+```
 wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
 
 unzip stMVC_test_data.zip
-
+```
 ## Run: 
 
 * python main_stMVC_DLPFC.py
