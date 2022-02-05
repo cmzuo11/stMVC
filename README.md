@@ -10,7 +10,7 @@ Overview of stMVC model. a Given each spatially resolved transcriptomics (SRT) d
 
 Installation Tested on Red Hat 7.6 with Python 3.6.12 and torch 1.6.0 on a machine with one 40-core Intel(R) Xeon(R) Gold 5115 CPU addressing with 132GB RAM, and two NVIDIA TITAN V GPU addressing 24GB. stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possible. 
 
-### grabbing source code
+#### 1. grabbing source code of stMVC
 
 ```
 git clone https://github.com/cmzuo11/stMVC.git
@@ -18,7 +18,7 @@ git clone https://github.com/cmzuo11/stMVC.git
 cd stMVC
 ```
 
-### install stMVC in the virutal environment by conda
+#### 2. install stMVC in the virutal environment by conda
 
 The used packages (described by "used_package.txt") for stMVC can be automatically installed.
 
@@ -50,7 +50,15 @@ unzip stMVC_test_data.zip
 ```
 ## Run: 
 
-* python main_stMVC_DLPFC.py
+### Preprocess data
+```
+python Preprcessing_stMVC.py
+```
+
+### run stMVC model
+```
+python main_stMVC_DLPFC.py
+```
 
 ## Useful paramters:
 
@@ -65,5 +73,11 @@ unzip stMVC_test_data.zip
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
 # Reference
+
+1. AE:
+2. GAT:
+3. SimCLR:
+
+# Citation
 
 Chunman Zuo, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
