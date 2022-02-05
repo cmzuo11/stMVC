@@ -142,22 +142,18 @@ def Multi_views_attention_train(args, image_rep_file = None, RNA_file = None, im
 		            rna_data_all_1.values, adj_orig_all_1, rna_data_all_2.values, adj_orig_all_2,
 		            np.array(aa), None)
 
-	save_name_pre = '{}_{}_{}_{}_{}_{}_{}_{}_{}'.format( args.latent_T1, args.latent_T2, args.max_epoch_T, 
-														 args.lr_T1, args.lr_T2, args.lr_T3, args.beta_pa,
-														 args.knn, integrate_type )
-
-	torch.save( model.state_dict(), outDir + '/{}_{}_2-view_model_split_{}_temp_new.pth'.format(save_name_pre, "GAT", str(select_prop) ) )
+	torch.save( model.state_dict(), outDir + '/{}_2-view_model.pth'.format( "GAT" ) )
 	
 	lamda, mu_robust1, class_prediction = model( rna_data_all_1.values, adj_orig_all_1, 
 												 rna_data_all_2.values, adj_orig_all_2 )
 
 	data_frame  = pd.DataFrame(data=mu_robust1.data.cpu().numpy(), index=rna_data1.index ).to_csv( outDir + 
-							   '/{}_{}_2-view_robust_representation_split_{}_temp_new.csv'.format(save_name_pre, "GAT", str(select_prop) ) ) 
+							   '/{}_2-view_robust_representation.csv'.format( "GAT" ) ) 
 
 	if integrate_type != "NN":
 		data_frame  = pd.DataFrame(data=lamda.data.cpu().numpy(), index=rna_data1.index ).to_csv( outDir + 
-								   '/{}_{}_2-view_lamda_coefficients_split_{}_temp_new.csv'.format(save_name_pre, "GAT", str(select_prop) ) ) 
+								   '/{}_2-view_lamda_coefficients.csv'.format( "GAT" ) ) 
 
 	data_frame  = pd.DataFrame(data=class_prediction.data.cpu().numpy(), index=rna_data1.index ).to_csv( outDir + 
-							   '/{}_{}_2-view_class_prediction_split_{}_temp_new.csv'.format(save_name_pre, "GAT", str(select_prop) ) ) 
+							   '/{}_2-view_class_prediction.csv'.format( "GAT" ) )
 
