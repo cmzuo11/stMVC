@@ -225,3 +225,5 @@ def extract_representation_simCLR_model( args, outDir = 'results', model_file = 
 	data_frame.to_csv( save_fileName )
 
 	return save_fileName
+
+
