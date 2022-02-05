@@ -103,13 +103,13 @@ def train_simCLR_sImage( args, outDir = "results", sub_path = None, file_code = 
 		temp_file_list = []
 
 		for z in list(range(len(file_code))):
-			temp_files    =  glob.glob( sub_path + file_code[z] + "/tmp/*.jpeg" )
+			temp_files    =  glob2.glob( sub_path + file_code[z] + "/tmp/*.jpeg" )
 			temp_file_list.extend( temp_files )
 
 		file_list = temp_file_list
 
 	else:
-		file_list         = glob.glob( str(args.tillingPath) + "/*.jpeg" )
+		file_list         = glob2.glob( str(args.tillingPath) + "/*.jpeg" )
 
 	train_idx, test_idx   = train_test_split(np.arange(len(file_list)),
 											 test_size    = 0.15,
@@ -225,5 +225,3 @@ def extract_representation_simCLR_model( args, outDir = 'results', model_file = 
 	data_frame.to_csv( save_fileName )
 
 	return save_fileName
-
-
