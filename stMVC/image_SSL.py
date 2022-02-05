@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import numpy as np
 import torch
-import glob
+import glob2
 import torch.optim as optim
 
 from torch.utils.data import DataLoader
@@ -225,3 +225,5 @@ def extract_representation_simCLR_model( args, outDir = 'results', model_file = 
 	data_frame.to_csv( save_fileName )
 
 	return save_fileName
+
+
