@@ -36,16 +36,13 @@ from scipy.spatial.distance import cosine
 def parameter_setting():
 	
 	parser      = argparse.ArgumentParser(description='Spatial transcriptomics analysis')
-	
-	inputPath   = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/'
-	TillingPath = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/tmp/'
+	BasePath    = './stMVC_test_data/DLPFC_151673/'
 
-	outPath     = '/sibcb2/chenluonanlab7/cmzuo/workPath/CMSSL/spatial_result/BRCA_Immu/CMSSL/'
+	parser.add_argument('--basePath', '-bp', type=str, default = BasePath, help='Output path')
 	
-	parser.add_argument('--inputPath',   '-IP', type = str, default = inputPath,    help='data directory')
-	parser.add_argument('--tillingPath', '-TP', type = str, default = TillingPath,  help='image data directory')
-	
-	parser.add_argument('--outPath', '-od', type=str, default = outPath, help='Output path')
+	parser.add_argument('--inputPath',   '-IP', type = str, default = None,    help='data directory')
+	parser.add_argument('--tillingPath', '-TP', type = str, default = None,  help='image data directory')
+	parser.add_argument('--outPath', '-od', type=str, default = None, help='Output path')
 	
 	parser.add_argument('--weight_decay', type=float, default = 1e-6, help='weight decay')
 	parser.add_argument('--eps', type=float, default = 0.01, help='eps')
@@ -100,74 +97,6 @@ def parameter_setting():
 	parser.add_argument('--test_prop', default=0.05, type=float, help='the proportion data for testing')
 	
 	return parser
-
-def read_dataset( File1 = None, File2 = None,  transpose = True, test_size_prop = 0.15, state = 0 ):
-
-	### File1 for raw reads count 
-	if File1 is not None:
-		adata = sc.read(File1)
-
-		if transpose:
-			adata = adata.transpose()
-	else:
-		adata = None
-	
-	### File2 for cell group information
-	label_ground_truth = []
-
-	if state == 0 :
-
-		if File2 is not None:
-
-			Data2 = pd.read_csv( File2, header=0, index_col=0 )
-			## preprocessing for latter evaluation
-
-			group = Data2['Group'].values
-
-			for g in group:
-				g = int(g.split('Group')[1])
-				label_ground_truth.append(g)
-
-		else:
-			label_ground_truth =  np.ones( len( adata.obs_names ) )
-
-	if test_size_prop > 0 :
-		train_idx, test_idx = train_test_split(np.arange(adata.n_obs), 
-											   test_size = test_size_prop, 
-											   random_state = 200)
-		spl = pd.Series(['train'] * adata.n_obs)
-		spl.iloc[test_idx]  = 'test'
-		adata.obs['split']  = spl.values
-		
-	else:
-		train_idx, test_idx = list(range( adata.n_obs )), list(range( adata.n_obs ))
-
-		spl = pd.Series(['train'] * adata.n_obs)
-		adata.obs['split']       = spl.values
-		
-	adata.obs['split'] = adata.obs['split'].astype('category')
-	adata.obs['Group'] = label_ground_truth
-	adata.obs['Group'] = adata.obs['Group'].astype('category')
-	
-	print('Successfully preprocessed {} genes and {} cells.'.format(adata.n_vars, adata.n_obs))
-	
-	### here, adata with cells * features
-	return adata, train_idx, test_idx, label_ground_truth
-
-def data_normalization( File1, outFile, reverse = False ):
-
-	scaler          = MinMaxScaler(feature_range=(0, 1))
-	image_latent    = pd.read_csv(File1, header=0, index_col=0)
-
-	if reverse:
-		image_norm  = scaler.fit_transform( image_latent.values.T )
-		latent_z1   = pd.DataFrame( image_norm.T, index= image_latent.index, 
-									columns = image_latent.columns ).to_csv( outFile ) 
-
-	else:
-		image_norm  = scaler.fit_transform( image_latent.values )
-		latent_z1   = pd.DataFrame( image_norm, index= image_latent.index, 
-									columns = image_latent.columns ).to_csv( outFile ) 
 
 
 def normalize( adata, filter_min_counts=True, size_factors=True, 
@@ -483,3 +412,72 @@ def load_checkpoint(file_path, model, use_cuda=False):
 
 	model.eval()
 	return model
+	
+
+def read_dataset( File1 = None, File2 = None,  transpose = True, test_size_prop = 0.15, state = 0 ):
+
+	### File1 for raw reads count 
+	if File1 is not None:
+		adata = sc.read(File1)
+
+		if transpose:
+			adata = adata.transpose()
+	else:
+		adata = None
+	
+	### File2 for cell group information
+	label_ground_truth = []
+
+	if state == 0 :
+
+		if File2 is not None:
+
+			Data2 = pd.read_csv( File2, header=0, index_col=0 )
+			## preprocessing for latter evaluation
+
+			group = Data2['Group'].values
+
+			for g in group:
+				g = int(g.split('Group')[1])
+				label_ground_truth.append(g)
+
+		else:
+			label_ground_truth =  np.ones( len( adata.obs_names ) )
+
+	if test_size_prop > 0 :
+		train_idx, test_idx = train_test_split(np.arange(adata.n_obs), 
+											   test_size = test_size_prop, 
+											   random_state = 200)
+		spl = pd.Series(['train'] * adata.n_obs)
+		spl.iloc[test_idx]  = 'test'
+		adata.obs['split']  = spl.values
+		
+	else:
+		train_idx, test_idx = list(range( adata.n_obs )), list(range( adata.n_obs ))
+
+		spl = pd.Series(['train'] * adata.n_obs)
+		adata.obs['split']       = spl.values
+		
+	adata.obs['split'] = adata.obs['split'].astype('category')
+	adata.obs['Group'] = label_ground_truth
+	adata.obs['Group'] = adata.obs['Group'].astype('category')
+	
+	print('Successfully preprocessed {} genes and {} cells.'.format(adata.n_vars, adata.n_obs))
+	
+	### here, adata with cells * features
+	return adata, train_idx, test_idx, label_ground_truth
+
+def data_normalization( File1, outFile, reverse = False ):
+
+	scaler          = MinMaxScaler(feature_range=(0, 1))
+	image_latent    = pd.read_csv(File1, header=0, index_col=0)
+
+	if reverse:
+		image_norm  = scaler.fit_transform( image_latent.values.T )
+		latent_z1   = pd.DataFrame( image_norm.T, index= image_latent.index, 
+									columns = image_latent.columns ).to_csv( outFile ) 
+
+	else:
+		image_norm  = scaler.fit_transform( image_latent.values )
+		latent_z1   = pd.DataFrame( image_norm, index= image_latent.index, 
+									columns = image_latent.columns ).to_csv( outFile ) 
