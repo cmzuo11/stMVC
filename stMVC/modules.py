@@ -24,103 +24,16 @@ from tqdm import tqdm
 from torch.autograd import Variable
 from torch.nn.modules.module import Module
 from torchvision import models
-from loss_function import log_nb_positive
 from collections import OrderedDict
 from torch.distributions import Normal, kl_divergence as kl
 from sklearn import metrics
 from sklearn.metrics.cluster import normalized_mutual_info_score
 
-from layers import GraphConvolution, build_multi_layers, Encoder, Decoder_logNorm_NB, Decoder, GraphAttentionLayer
-from layers import CrossViewAttentionLayer, Integrate_multiple_view_model
-from loss_function import log_nb_positive, mse_loss, loss_function, supervised_multiple_loss_function, loss_function_total, loss_function_total_2
-from utilities import adjust_learning_rate, preprocess_graph, get_roc_score
-
-class gcn_vae(nn.Module):
-	def __init__(self, args, input_dim, hidden_dim1, hidden_dim2, dropout):
-		super(gcn_vae, self).__init__()
-
-		self.gc1  = GraphConvolution(input_dim, hidden_dim1, dropout, act=F.relu)
-		self.gc2  = GraphConvolution(hidden_dim1, hidden_dim2, dropout, act=lambda x: x)
-		self.gc3  = GraphConvolution(hidden_dim1, hidden_dim2, dropout, act=lambda x: x)
-		self.dc   = InnerProductDecoder(dropout, act=lambda x: x)
-
-		self.W1   = nn.Parameter(torch.empty(size=(hidden_dim2, args.cluster_pre)))
-		nn.init.xavier_uniform_(self.W1.data, gain=1.414)
-
-		self.args = args
-
-	def encode(self, x, adj):
-		hidden1 = self.gc1(x, adj)
-		return self.gc2(hidden1, adj), self.gc3(hidden1, adj)
-
-	def reparameterize(self, mu, logvar):
-		if self.training:
-			std = torch.exp(logvar)
-			eps = torch.randn_like(std)
-			return eps.mul(std).add_(mu)
-		else:
-			return mu
-
-	def inference(self, x, adj):
-		mu, logvar = self.encode(x, adj)
-		z          = self.reparameterize(mu, logvar)
-
-		return self.dc(z), mu, logvar, F.softmax(torch.mm(z, self.W1), dim = 1)
-
-	def forward(self, x, adj):
-		reconstruction, mu, logvar, class_prediction = self.inference(x, adj)
-
-		return reconstruction, mu, logvar, class_prediction
-
-	def fit(self, rna_data, adj_orig, adj_train, test_E, test_E_F,  
-			lamda = None, robust_rep = None, lr_model = 0.02,
-			true_class = None, training = None):
-
-		n_spot, feat_dim = rna_data.size()
-		adj              = adj_train
-
-		# Some preprocessing
-		adj_norm     = preprocess_graph(adj).cuda()
-		adj_label    = adj_train + sp.eye(adj_train.shape[0])
-		adj_label    = torch.FloatTensor(adj_label.toarray()).cuda()
-
-		pos_weight   = torch.as_tensor( ((adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()) ) 
-		norm         = torch.as_tensor( adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.sum()) * 2) )
-
-		optimizer    = optim.Adam(self.parameters(), lr=lr_model)
-
-		hidden_emb   = None
-		train_bar    = tqdm(range(self.args.max_epoch_T))
-		epoch        = 0
-		minimum_loss = 10000
-
-		self.train()
-
-		for index in train_bar:
-			epoch = epoch + 1
-			t     = time.time()
-
-			optimizer.zero_grad()
-			recovered, mu, logvar, class_pre       = self.inference(rna_data, adj_norm)
-			cost, KLD, robust_loss, predict_class  = loss_function(preds      = recovered, labels = adj_label,
-																   mu         = mu,        logvar = logvar, 
-																   n_nodes    = torch.as_tensor(n_spot).cuda(),
-																   norm       = norm,   pos_weight= pos_weight,
-																   lamda      = lamda, robust_rep = robust_rep,
-																   prediction = class_pre, true_class = true_class,
-																   training   = training)
-			loss = cost + KLD +  self.args.beta_pa * robust_loss + predict_class
-			loss.backward()
-			optimizer.step()
-
-			hidden_emb        = mu.data.cpu().numpy()
-			roc_curr, ap_curr = get_roc_score(hidden_emb, adj_orig, test_E, test_E_F)
-
-			train_bar.set_description('Train Epoch: [{}/{}] graph_loss: {:.4f} KL_loss: {:.4f} robust_rep: {:.4f} time: {:.4f}'.format(epoch, 
-									  self.args.max_epoch_T, cost.item(), KLD.item(), self.args.beta_pa *  robust_loss.item(), (time.time() - t) ))
-
-		print("Optimization Finished!")
-
+from stMVC.layers import GraphConvolution, build_multi_layers, Encoder, Decoder_logNorm_NB, Decoder, GraphAttentionLayer
+from stMVC.layers import CrossViewAttentionLayer, Integrate_multiple_view_model
+from stMVC.loss_function import log_nb_positive, mse_loss, loss_function, supervised_multiple_loss_function, loss_function_total, loss_function_total_2
+from stMVC.utilities import adjust_learning_rate, preprocess_graph, get_roc_score
+from stMVC.loss_function import log_nb_positive
 		
 class gat(nn.Module):
 	def __init__(self, args, nfeat, nhid, nclass, dropout = 0.0, alpha = 0.2, nheads =2):
@@ -280,23 +193,17 @@ class InnerProductDecoder(Module):
 		adj = self.act(torch.mm(z, z.t()))
 		return adj
 
-
 class Cross_Views_attention_integrate(Module):
 
 	def __init__(self, args, nfeat1, nhid1, nclass1, nfeat2, nhid2, nclass2, 
-				 nClass, nheads1 =1, nheads2 =1, dropout  = 0.1, alpha = 0.2, 
-				 model_pattern = "GAT", max_iteration = 5,  class_label1 = None, 
-				 class_label2 = None, training = None, integrate_type = "Attention"):
+				 nClass, nheads1 =1, nheads2 =1, dropout  = 0.1, alpha  = 0.2, 
+				 model_pattern = "GAT", max_iteration = 5,  class_label = None, 
+				 training = None, integrate_type = "Attention"):
 
 		super(Cross_Views_attention_integrate, self).__init__()
 
-		if model_pattern == "GAT":
-			self.view1  = gat(args, nfeat1, nhid1, nclass1, dropout = dropout, alpha = alpha, nheads = nheads1).cuda()
-			self.view2  = gat(args, nfeat2, nhid2, nclass2, dropout = 0, alpha = alpha, nheads = nheads1).cuda()
-
-		else:
-			self.view1  = gcn_vae(args, nfeat1, nhid1, nclass1, dropout = dropout ).cuda()
-			self.view2  = gcn_vae(args, nfeat2, nhid2, nclass2, dropout = dropout ).cuda()
+		self.view1  = gat(args, nfeat1, nhid1, nclass1, dropout = dropout, alpha = alpha, nheads = nheads1).cuda()
+		self.view2  = gat(args, nfeat2, nhid2, nclass2, dropout = 0, alpha = alpha, nheads = nheads1).cuda()
 
 		if integrate_type == "Attention":
 			self.crossview  = CrossViewAttentionLayer(nclass1, nClass, dropout = 0.0, alpha = 0.2).cuda()
@@ -305,8 +212,7 @@ class Cross_Views_attention_integrate(Module):
 			self.crossview  = Integrate_multiple_view_model(nclass1, nClass, dropout = 0.0, alpha = 0.2, type = "Prop").cuda()
 
 		self.max_iteration = max_iteration
-		self.class_label1  = class_label1
-		self.class_label2  = class_label2
+		self.class_label   = class_label
 		self.training_int  = training
 		self.args          = args
 
@@ -396,7 +302,7 @@ class Cross_Views_attention_integrate(Module):
 
 			view1_loss = self.view1.fit( rna_data_exp1, adj_orig1, adj_train1, test_E1, test_E_F1, 
 										 lamda    = lamda,           robust_rep = mu_robust,
-										 lr_model = self.args.lr_T1, true_class = self.class_label2, 
+										 lr_model = self.args.lr_T1, true_class = self.class_label, 
 										 training_info = self.training_int,      loc = 0 )
 
 			adj_norm_all_1, _, _, _   = self.view1.graph_processing( adj_orig_all_1 )
@@ -408,7 +314,7 @@ class Cross_Views_attention_integrate(Module):
 
 			view2_loss = self.view2.fit( rna_data_exp2, adj_orig2, adj_train2, test_E2, test_E_F2, 
 										 lamda    = lamda,           robust_rep = mu_robust,
-										 lr_model = self.args.lr_T2, true_class = self.class_label2, 
+										 lr_model = self.args.lr_T2, true_class = self.class_label, 
 										 training_info = self.training_int,      loc = 1 )
 
 			adj_norm_all_2, _, _, _    = self.view2.graph_processing( adj_orig_all_2 )
@@ -428,7 +334,7 @@ class Cross_Views_attention_integrate(Module):
 
 			context_loss = self.fit_model_collaborative(rna_data1, adj_train1, rna_data2, adj_train2, 
 														lamda.detach(), mu_robust.detach(), self.args.lr_T3, 
-														self.training_int, self.class_label1, "context" )
+														self.training_int, self.class_label, "context" )
 
 			_, mu1, _, _   = self.view1( rna_data_exp1, adj_org_norm1 )
 			_, mu2, _, _   = self.view2( rna_data_exp2, adj_org_norm2 )
@@ -436,7 +342,7 @@ class Cross_Views_attention_integrate(Module):
 			lamda, mu_robust, class_prediction = self.crossview( mu1, mu2 )
 
 			if mu_robust is not None and lamda is not None:
-				self.evaluation_metrics( mu_robust, self.class_label1, self.training_int )
+				self.evaluation_metrics( mu_robust, self.class_label, self.training_int )
 				_, mu_robust_a, class_prediction = self.learn_robust_representation( rna_data_all_1, adj_orig_all_1, 
 																					 rna_data_all_2, adj_orig_all_2 )
 
@@ -660,7 +566,7 @@ class AE(Module):
 	def fit( self, train_loader, test_loader ):
 
 		params    = filter(lambda p: p.requires_grad, self.parameters())
-		optimizer = optim.Adam( params, lr = self.args.lr_VAET, weight_decay = self.args.weight_decay, eps = self.args.eps )
+		optimizer = optim.Adam( params, lr = self.args.lr_AET, weight_decay = self.args.weight_decay, eps = self.args.eps )
 
 		train_loss_list   = []
 		reco_epoch_test   = 0
@@ -680,7 +586,7 @@ class AE(Module):
 			patience_epoch += 1
 
 			kl_weight      =  min( 1, epoch / self.args.anneal_epoch )
-			epoch_lr       =  adjust_learning_rate( self.args.lr_VAET, optimizer, epoch, self.args.lr_VAET_F, 10 )
+			epoch_lr       =  adjust_learning_rate( self.args.lr_AET, optimizer, epoch, self.args.lr_AET_F, 10 )
 
 			for batch_idx, ( X, X_raw, size_factor ) in enumerate(train_loader):
 
@@ -738,193 +644,6 @@ class AE(Module):
 					print( abs(train_loss_list[-1] - train_loss_list[-2]) / train_loss_list[-2] )
 					print( "converged!!!" )
 					print( epoch )
-					break
-
-		duration = time.time() - start
-
-		print('Finish training, total time is: ' + str(duration) + 's' )
-		self.eval()
-		print(self.training)
-
-		print( 'train likelihood is :  '+ str(test_like_max) + ' epoch: ' + str(reco_epoch_test) )
-
-
-class VAE(Module):
-	def __init__( self, layer_e, hidden1, Zdim, layer_d, hidden2, args, droprate = 0.1, type = "NB" ):
-		super(VAE, self).__init__()
-		
-		### function definition
-		self.encoder   = Encoder( layer_e, hidden1, Zdim )
-
-		if type == "NB":
-			self.decoder = Decoder_logNorm_NB( layer_d, hidden2, layer_e[0], droprate = droprate )
-
-		else: #Gaussian
-			self.decoder = Decoder( layer_d, hidden2, layer_e[0], Type = type, droprate = droprate)
-
-		self.args      = args
-		self.type      = type
-	
-	def inference(self, X = None, scale_factor = 1.0):
-		
-		mean_1, logvar_1, latent_1, _ = self.encoder.return_all_params( X )
-		
-		### decoder
-		if self.type == "NB":
-			output        =  self.decoder( latent_1, scale_factor )
-			norm_x        =  output["normalized"]
-			disper_x      =  output["disperation"]
-			recon_x       =  output["scale_x"]
-
-		else:
-			recons_x      =  self.decoder( latent_1 )
-			recon_x       =  recons_x
-			norm_x        =  None
-			disper_x      =  None
-
-		return dict( norm_x    = norm_x, disper_x   = disper_x, recon_x  = recon_x,
-					 latent_z  = latent_1, mean     =  mean_1, logvar    = logvar_1 )
-
-
-	def return_loss(self, X = None, X_raw = None, scale_factor = 1.0 ):
-
-		output           =  self.inference( X, scale_factor )
-		recon_x          =  output["recon_x"]
-		disper_x         =  output["disper_x"]
-
-		mean_1           =  output["mean"]
-		logvar_1         =  output["logvar"]
-		latent_z1        =  output["latent_z"]
-
-		if self.type == "NB":
-			loss             =  log_nb_positive( X_raw, recon_x, disper_x )
-
-		else:
-			loss = mse_loss( X, recon_x )
-
-		mean             =  torch.zeros_like(mean_1)
-		scale            =  torch.ones_like(logvar_1)
-		kl_divergence_z  =  kl( Normal(mean_1, logvar_1), 
-								Normal(mean, scale)).sum(dim=1)
-
-		return loss, kl_divergence_z
-
-		
-	def forward( self, X = None, scale_factor = 1.0 ):
-
-		output =  self.inference( X, scale_factor )
-
-		return output
-
-
-	def predict(self, dataloader, out='z' ):
-		
-		output = []
-
-		for batch_idx, ( X, size_factor ) in enumerate(dataloader):
-
-			if self.args.use_cuda:
-				X, size_factor = X.cuda(), size_factor.cuda()
-
-			X           = Variable( X )
-			size_factor = Variable(size_factor)
-
-			result      = self.inference( X, size_factor)
-
-			if out == 'z': 
-				output.append( result["latent_z"].detach().cpu() )
-
-			elif out == 'recon_x':
-				output.append( result["recon_x"].detach().cpu().data )
-
-			else:
-				output.append( result["norm_x"].detach().cpu().data )
-
-		output = torch.cat(output).numpy()
-		return output
-
-
-	def fit( self, train_loader, test_loader ):
-
-		params    = filter(lambda p: p.requires_grad, self.parameters())
-		optimizer = optim.Adam( params, lr = self.args.lr_VAET, weight_decay = self.args.weight_decay, eps = self.args.eps )
-
-		train_loss_list   = []
-		reco_epoch_test   = 0
-		test_like_max     = 100000
-		flag_break        = 0
-
-		patience_epoch         = 0
-		self.args.anneal_epoch = 10
-
-		start = time.time()
-
-		for epoch in range( 1, self.args.max_epoch_T + 1 ):
-
-			self.train()
-			optimizer.zero_grad()
-
-			patience_epoch += 1
-
-			kl_weight      =  min( 1, epoch / self.args.anneal_epoch )
-			epoch_lr       =  adjust_learning_rate( self.args.lr_VAET, optimizer, epoch, self.args.lr_VAET_F, 10 )
-
-			for batch_idx, ( X, X_raw, size_factor ) in enumerate(train_loader):
-
-				if self.args.use_cuda:
-					X, X_raw, size_factor = X.cuda(), X_raw.cuda(), size_factor.cuda()
-				
-				X, X_raw, size_factor     = Variable( X ), Variable( X_raw ), Variable( size_factor )
-				loss1, kl_divergence_z    = self.return_loss( X, X_raw, size_factor )
-
-				loss = torch.mean( loss1 +  (kl_weight * kl_divergence_z)  )
-
-				loss.backward()
-				optimizer.step()
-
-			if epoch % self.args.epoch_per_test == 0 and epoch > 0: 
-				self.eval()
-
-				with torch.no_grad():
-
-					for batch_idx, ( X, X_raw, size_factor ) in enumerate(test_loader): 
-
-						if self.args.use_cuda:
-							X, X_raw, size_factor = X.cuda(), X_raw.cuda(), size_factor.cuda()
-
-						X, X_raw, size_factor     = Variable( X ), Variable( X_raw ), Variable( size_factor )
-
-						loss, kl_divergence_z     = self.return_loss( X, X_raw, size_factor )
-						test_loss                 = torch.mean( loss +  (kl_weight * kl_divergence_z) )
-
-						train_loss_list.append( test_loss.item() )
-
-						#print( str(torch.mean(loss).item()) + "   "+ str(torch.mean(kl_divergence_z).item()) )
-
-						if math.isnan(test_loss.item()):
-							flag_break = 1
-							break
-
-						if test_like_max >  test_loss.item():
-							test_like_max   = test_loss.item()
-							reco_epoch_test = epoch
-							patience_epoch  = 0        
-
-			if flag_break == 1:
-				print("containin NA")
-				print(epoch)
-				break
-
-			if patience_epoch >= 30 :
-				print("patient with 30")
-				print(epoch)
-				break
-			
-			if len(train_loss_list) >= 2 :
-				if abs(train_loss_list[-1] - train_loss_list[-2]) / train_loss_list[-2] < 1e-4 :
-
-					print("converged!!!")
-					print(epoch)
 					break
 
 		duration = time.time() - start
