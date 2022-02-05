@@ -12,8 +12,8 @@ import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from modules import resnet50_model
-from image_processing import CustomDataset, test_transform
+from stMVC.modules import resnet50_model
+from stMVC.image_processing import CustomDataset, test_transform
 
 def Extract_representation( args, outDir = 'results' ):
 
@@ -54,5 +54,3 @@ def Extract_representation( args, outDir = 'results' ):
 
 	data_frame = pd.DataFrame(data=feature_dim, index=barcode, columns =  list(range(1, 2049)) )
 	data_frame.to_csv( outDir + '/resnet50_reprensentation.csv')
-
-
