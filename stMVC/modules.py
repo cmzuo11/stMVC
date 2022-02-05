@@ -298,7 +298,7 @@ class Cross_Views_attention_integrate(Module):
 
 			print(str(iter) + "-----------------")
 
-			print( "iamge feature" )
+			print( "HSG by visual features" )
 
 			view1_loss = self.view1.fit( rna_data_exp1, adj_orig1, adj_train1, test_E1, test_E_F1, 
 										 lamda    = lamda,           robust_rep = mu_robust,
@@ -310,7 +310,7 @@ class Cross_Views_attention_integrate(Module):
 			self.view1.evaluation_metrics(mu_all_1, used_int, class_label_all)
 			self.view1.evaluation_classification(class_label_all, class_pre, used_int)
 
-			print( "spot location" )
+			print( "SLG by spatial location" )
 
 			view2_loss = self.view2.fit( rna_data_exp2, adj_orig2, adj_train2, test_E2, test_E_F2, 
 										 lamda    = lamda,           robust_rep = mu_robust,
