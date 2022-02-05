@@ -15,7 +15,7 @@ plt.switch_backend('Agg')
 import numpy as np
 import pandas as pd
 import os
-import glob
+import glob2
 
 from typing import Optional, Union
 from anndata import AnnData
@@ -39,12 +39,12 @@ class CustomDataset(Dataset):
 			temp_file_list = []
 
 			for z in list(range(len(file_code))):
-				temp_files    =  glob.glob( sub_path + file_code[z] + "/tmp/*.jpeg" )
+				temp_files    =  glob2.glob( sub_path + file_code[z] + "/tmp/*.jpeg" )
 				temp_file_list.extend(temp_files)
 			file_list = temp_file_list
 
 		else:
-			file_list = glob.glob( str(imgs_path) + "/*.jpeg" )
+			file_list = glob2.glob( str(imgs_path) + "/*.jpeg" )
 
 		self.data      = []
 		self.barcode   = []
