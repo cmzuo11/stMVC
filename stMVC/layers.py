@@ -18,7 +18,7 @@ from torch.autograd import Variable
 from torch import optim
 from tqdm import tqdm
 
-from loss_function import supervised_multiple_loss_function
+from stMVC.loss_function import supervised_multiple_loss_function
 
 
 def build_multi_layers(layers, use_batch_norm=True, dropout_rate = 0.1 ):
