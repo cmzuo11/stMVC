@@ -67,13 +67,12 @@ def parameter_setting():
 	parser.add_argument('--max_epoch_I', '-meI', type=int, default=500, help='Max epoches for spot image data')
 	parser.add_argument('--current_epoch_I', '-curEI', type=int, default=0, help='current epoches for spot image data')
 
-	parser.add_argument('--lr_T1', type=float, default = 0.002, help='Learning rate for GCN constructed by vision')
-	parser.add_argument('--lr_T2', type=float, default = 0.002, help='Learning rate for GCN constructed by transcriptomics data')
-	parser.add_argument('--lr_T3', type=float, default = 0.002, help='Learning rate for GCN constructed by transcriptomics data')
-	parser.add_argument('--lr_AET', type=float, default = 8e-05, help='Learning rate for transcriptomics data for AE model')
-	parser.add_argument('--lr_AET_F', type=float, default = 0.00001, help='final learning rate for transcriptomics data for AE model')
+	parser.add_argument('--lr_T1', type=float, default = 0.002, help='Learning rate of SGATE model for graph constructed by vision features')
+	parser.add_argument('--lr_T2', type=float, default = 0.002, help='Learning rate of SGATE model for graph constructed by spatial location data')
+	parser.add_argument('--lr_T3', type=float, default = 0.002, help='Learning rate for multi-view graph collaborative learning model')
+	parser.add_argument('--lr_AET', type=float, default = 8e-05, help='Learning rate of AE model for transcriptomics data')
+	parser.add_argument('--lr_AET_F', type=float, default = 0.00001, help='final learning rate of AE model for transcriptomics data')
 	parser.add_argument('--lr_I', type=float, default = 0.0001, help='Learning rate for spot image data')
-	parser.add_argument('--lr_crossView', type=float, default = 0.05, help='Learning rate for spot image data')
 
 	parser.add_argument('--rna_model', '-rnaModel', type=str, default = 'AE', help='extract RNA information')
 	parser.add_argument('--image_model', '-imageModel', type=str, default = 'AE', help='extract image information')
