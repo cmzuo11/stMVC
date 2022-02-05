@@ -6,19 +6,31 @@ Overview of stMVC model. a Given each spatially resolved transcriptomics (SRT) d
 
 # Installation
 
-## Install histological label software 
-
-Install labelme software based on the Github link: https://github.com/wkentaro/labelme
-
 ## Install stMVC
 
-stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possible. stMVC requires python 3.6.12, and torch 1.6.0. The used packages (described by "used_package.txt") for stMVC can be automatically installed.
+Installation Tested on Red Hat 7.6 with Python 3.6.12 and torch 1.6.0 on a machine with one 40-core Intel(R) Xeon(R) Gold 5115 CPU addressing with 132GB RAM, and two NVIDIA TITAN V GPU addressing 24GB. stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possible. 
+
+### grabbing source code
 
 * git clone https://github.com/cmzuo11/stMVC.git
 
 * cd stMVC
 
-* python setup.py install
+### install stMVC in the virutal environment by conda
+
+The used packages (described by "used_package.txt") for stMVC can be automatically installed.
+
+* conda create -n stMVC python=3.6.12 pip
+
+* source activate
+
+* conda activate stMVC
+
+* pip install -r used_package.txt
+
+## Install histological label software (labelme) 
+
+Installation tested on Windows 10 with Intel Core i7-4790 CPU, and the labelme software is available at Github: https://github.com/wkentaro/labelme
 
 # Quick start
 
@@ -26,7 +38,11 @@ stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possi
 
 * a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
-* the example files for the slice 151673 of DLPFC dataset are included in the Example_test/DLPFC_151673 folder.
+* with the example file of slice 151673 as an example, you can download it by the following code:
+
+wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
+
+unzip stMVC_test_data.zip
 
 ## Run: 
 
