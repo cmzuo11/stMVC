@@ -9,9 +9,6 @@ stlearn
 sklearn
 matplotlib
 glob2
-json
-PIL
-cv2
 anndata
 argparse
 pathlib
