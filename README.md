@@ -124,8 +124,6 @@ To reproduce the result, you should use the default parameters.
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
-* ......
-
 ## Further analysis
 
 Some functions are based on the file named GAT_2-view_robust_representation.csv for further analysis.
@@ -133,6 +131,8 @@ Some functions are based on the file named GAT_2-view_robust_representation.csv 
 * knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
 
 * Seurat_processing: clustering, visualization and differential analysis by Seurat package.
+
+* ......
 
 # References
 
