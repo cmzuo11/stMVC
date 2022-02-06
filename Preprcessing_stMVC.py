@@ -17,7 +17,7 @@ from pathlib import Path
 from stMVC.utilities import parameter_setting
 from stMVC.image_processing import tiling
 from stMVC.image_SSL import train_simCLR_sImage, extract_representation_simCLR_model
-from stMVC.graph_embedding import RNA_encoding_train , Multi_views_attention_train, training_single_view_graph, load_calAdj_feature_data, load_calLocation_feature_data
+from stMVC.graph_embedding import RNA_encoding_train , Multi_views_attention_train
 from stMVC.image_resnet50 import Extract_representation
 
 def Preprocessing( args ):
