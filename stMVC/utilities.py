@@ -38,11 +38,13 @@ def parameter_setting():
 	parser      = argparse.ArgumentParser(description='Spatial transcriptomics analysis')
 	BasePath    = './stMVC_test_data/DLPFC_151673/'
 
-	parser.add_argument('--basePath', '-bp', type=str, default = BasePath, help='Output path')
+	parser.add_argument('--basePath', '-bp', type=str, default = BasePath, help='base path for the output of 10X pipeline')
 	
 	parser.add_argument('--inputPath',   '-IP', type = str, default = None,    help='data directory')
 	parser.add_argument('--tillingPath', '-TP', type = str, default = None,  help='image data directory')
 	parser.add_argument('--outPath', '-od', type=str, default = None, help='Output path')
+
+	parser.add_argument('--jsonFile', '-jFile', type=str, default = None, help='image cell segmentation file')
 	
 	parser.add_argument('--weight_decay', type=float, default = 1e-6, help='weight decay')
 	parser.add_argument('--eps', type=float, default = 0.01, help='eps')
@@ -76,7 +78,6 @@ def parameter_setting():
 	parser.add_argument('--graph_model', '-graphModel', type=str, default = 'GAT', help='graph attention model (GAT or GCN)')
 	parser.add_argument('--attention_head', '-attentionHead', type=int, default = 2, help='the number of attention heads (GAT or GCN)')
 	parser.add_argument('--fusion_type', '-fusionType', type=str, default = "Attention", help='the type of multi-view graph fusion')
-
 
 	parser.add_argument('--use_cuda', dest='use_cuda', default=True, action='store_true', help=" whether use cuda(default: True)")
 	
@@ -126,25 +127,32 @@ def normalize( adata, filter_min_counts=True, size_factors=True,
 	return adata
 
 
-def load_calAdj_feature_data( imageFile: str       = None, 
-							  rna_file: str        = None, 
-							  knn: int             = 7, 
-							  disatnce_method: str = "cosine", 
-							  test_prop: float     = 0.1,
-							  training: int        = None ):
+def load_HSG_SLG_by_feature_data( image_loc_file  = None, 
+								  rna_file        = None,
+								  class_file      = None, 
+								  knn             = 7, 
+								  disatnce_method = "cosine", 
+								  test_prop       = 0.1, 
+								  training        = None ):
+
+	## visual features or spatial location file
+	image_loc_in = pd.read_csv(image_loc_file, header = 0, index_col = 0)
 
 	if rna_file.find('csv') != -1:
 		rna_exp  = pd.read_csv(rna_file, header = 0, index_col = 0)
 	else:
 		rna_exp  = pd.read_table(rna_file, header = 0, index_col = 0)
 
-	image_latent = pd.read_csv(imageFile, header = 0, index_col = 0)
+	class_data   = pd.read_csv(class_file, header = 0, index_col = 0)
+
+	image_loc_in = image_loc_in.reindex(class_data.index)
+	rna_exp      = rna_exp.reindex(class_data.index)
 
 	if training is not None:
-		dist_out     = pairwise_distances(image_latent.values[training,:], metric = disatnce_method)
+		dist_out = pairwise_distances(image_loc_in.values[training,:], metric = disatnce_method)
 
 	else:
-		dist_out     = pairwise_distances(image_latent.values, metric = disatnce_method)
+		dist_out = pairwise_distances(image_loc_in.values, metric = disatnce_method)
 
 	row_index    = []
 	col_index    = []
@@ -165,52 +173,8 @@ def load_calAdj_feature_data( imageFile: str       = None,
 
 	adj_train, train_edges, test_edges, test_edges_false = mask_test_edges(adj, test_pro = test_prop)
 
-	return rna_exp, adj_orig, adj_train, train_edges, test_edges, test_edges_false
+	return rna_exp, class_data, adj_orig, adj_train, train_edges, test_edges, test_edges_false
 
-
-def load_calLocation_feature_data( spot_loc_file: str   = None, 
-								   rna_file: str        = None, 
-								   knn: int             = 6, 
-								   disatnce_method: str = "euclidean", 
-								   test_prop: float     = 0.1,
-								   training: int        = None ):
-
-	if rna_file.find('csv') != -1:
-		rna_exp  = pd.read_csv(rna_file, header = 0, index_col = 0)
-	else:
-		rna_exp  = pd.read_table(rna_file, header = 0, index_col = 0)
-
-	image_loc    = pd.read_csv(spot_loc_file, header = 0, index_col = 0)
-
-	aa           = rna_exp.index.values.tolist()
-	bb           = image_loc.index.values.tolist()
-
-	match_index  = [ bb.index(x) if x in bb else None for x in  aa ]
-
-	if training is not None:
-		dist_out = pairwise_distances(image_loc.values[match_index,:][training,:], metric = disatnce_method)
-
-	else:
-		dist_out = pairwise_distances(image_loc.values[match_index,:], metric = disatnce_method)
-
-	row_index    = []
-	col_index    = []
-
-	sorted_knn   = dist_out.argsort(axis=1)
-
-	for index in list(range( np.shape(dist_out)[0] )):
-		col_index.extend( sorted_knn[index, :knn].tolist() )
-		row_index.extend( [index] * knn )
-
-	adj        = sp.coo_matrix( (np.ones( len(row_index) ), (row_index, col_index) ), 
-								shape=( np.shape(dist_out)[0], np.shape(dist_out)[0] ), dtype=np.float32 )
-
-	adj_orig   = adj
-	adj_orig   = adj_orig - sp.dia_matrix((adj_orig.diagonal()[np.newaxis, :], [0]), shape=adj_orig.shape)
-
-	adj_orig.eliminate_zeros()
-	adj_train, train_edges, test_edges, test_edges_false = mask_test_edges(adj, test_pro = test_prop)
-	return rna_exp, adj_orig, adj_train, train_edges, test_edges, test_edges_false
 
 def mask_test_edges(adj, test_pro = 0.1, val_pro = 0.2):
 	# split edge into training and testing set
@@ -412,7 +376,7 @@ def load_checkpoint(file_path, model, use_cuda=False):
 
 	model.eval()
 	return model
-	
+
 
 def read_dataset( File1 = None, File2 = None,  transpose = True, test_size_prop = 0.15, state = 0 ):
 
