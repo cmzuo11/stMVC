@@ -140,6 +140,8 @@ Some functions based on file named GAT_2-view_robust_representation.csv for furt
 
 * DCCA: https://github.com/cmzuo11/DCCA
 
+* KNN_smoothing: https://github.com/yanailab/knn-smoothing
+
 # Citation
 
 Chunman Zuo, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
