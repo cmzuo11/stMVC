@@ -307,8 +307,8 @@ class Cross_Views_attention_integrate(Module):
 
 			adj_norm_all_1, _, _, _   = self.view1.graph_processing( adj_orig_all_1 )
 			_, mu_all_1, _, class_pre = self.view1.inference(torch.FloatTensor(rna_data_all_1).cuda(), adj_norm_all_1)
-			self.view1.evaluation_metrics(mu_all_1, used_int, class_label_all)
-			self.view1.evaluation_classification(class_label_all, class_pre, used_int)
+			#self.view1.evaluation_metrics(mu_all_1, used_int, class_label_all)
+			#self.view1.evaluation_classification(class_label_all, class_pre, used_int)
 
 			print( "SLG by spatial location" )
 
@@ -319,13 +319,13 @@ class Cross_Views_attention_integrate(Module):
 
 			adj_norm_all_2, _, _, _    = self.view2.graph_processing( adj_orig_all_2 )
 			_, mu_all_2, _, class_pre  = self.view2.inference(torch.FloatTensor(rna_data_all_2).cuda(), adj_norm_all_2)
-			self.view2.evaluation_metrics(mu_all_2, used_int, class_label_all)
-			self.view2.evaluation_classification(class_label_all, class_pre, used_int)
+			#self.view2.evaluation_metrics(mu_all_2, used_int, class_label_all)
+			#self.view2.evaluation_classification(class_label_all, class_pre, used_int)
 
 			_, mu_robust_a, class_prediction = self.crossview( mu_all_1, mu_all_2 )
 
 			self.evaluation_metrics( mu_robust_a, class_label_all, used_int)
-			self.evaluation_classification( class_label_all, class_prediction, used_int)
+			#self.evaluation_classification( class_label_all, class_prediction, used_int)
 
 			_, mu1, _, _   = self.view1( rna_data_exp1, adj_org_norm1 )
 			_, mu2, _, _   = self.view2( rna_data_exp2, adj_org_norm2 )
@@ -343,11 +343,11 @@ class Cross_Views_attention_integrate(Module):
 
 			if mu_robust is not None and lamda is not None:
 				self.evaluation_metrics( mu_robust, self.class_label, self.training_int )
-				_, mu_robust_a, class_prediction = self.learn_robust_representation( rna_data_all_1, adj_orig_all_1, 
-																					 rna_data_all_2, adj_orig_all_2 )
+				#_, mu_robust_a, class_prediction = self.learn_robust_representation( rna_data_all_1, adj_orig_all_1, 
+				#																	 rna_data_all_2, adj_orig_all_2 )
 
-				self.evaluation_metrics( mu_robust_a, class_label_all, used_int)
-				self.evaluation_classification( class_label_all, class_prediction, used_int)
+				#self.evaluation_metrics( mu_robust_a, class_label_all, used_int)
+				#self.evaluation_classification( class_label_all, class_prediction, used_int)
 
 			train_loss_list.append( context_loss  )
 
