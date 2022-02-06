@@ -126,9 +126,9 @@ Annotation_random_split = function(basePath, anno_file, anno_file_split, prop_se
 
 
 #Further analysis
-basePath       = "./stMVC_test_data/DLPFC_151673/stMVC"
-robust_rep     = read.csv( paste0(basePath, "GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
-Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC_clustering.pdf" )
+basePath       = "./stMVC_test_data/DLPFC_151673/"
+robust_rep     = read.csv( paste0(basePath, "stMVC/GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
+Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC/stMVC_clustering.pdf" )
 
 input_features = as.matrix(robust_rep[match(colnames(Seurat_obj), row.names(robust_rep)),])
 Seurat_obj     = FindVariableFeatures(Seurat_obj, nfeatures=2000)
