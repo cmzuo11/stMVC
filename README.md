@@ -139,7 +139,7 @@ Some functions from R file named Postprocessing.R (in stMVC folder) are based on
 library('Seurat')
 library('ggplot2')
 source(./stMVC/Postprocessing.R)
-basePath       = "./stMVC_test_data/DLPFC_151673/stMVC"
+basePath       = "./stMVC_test_data/DLPFC_151673/stMVC/"
 robust_rep     = read.csv( paste0(basePath, "GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
 Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC_clustering.pdf" )
 ```
