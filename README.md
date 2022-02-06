@@ -18,9 +18,11 @@ git clone https://github.com/cmzuo11/stMVC.git
 cd stMVC
 ```
 
-#### 2. install stMVC in the virutal environment by conda
+#### 2. install stMVC in the virutal environment by conda 
 
-The used packages (described by "used_package.txt") for stMVC can be automatically installed.
+* Firstly, install conda: https://docs.anaconda.com/anaconda/install/index.html
+
+* Then, automatically install all used packages (described by "used_package.txt") for stMVC in few minutes.
 
 ```
 conda create -n stMVC python=3.6.12 pip
@@ -30,44 +32,88 @@ source activate
 conda activate stMVC
 
 pip install -r used_package.txt
+
 ```
 
 ## Install histological label software (labelme) 
 
 Installation tested on Windows 10 with Intel Core i7-4790 CPU, and the labelme software is available at Github: https://github.com/wkentaro/labelme
 
+## Install R packages 
+
+* Install tested on R =4.0.0
+
+* install package 'Seurat' based on the https://github.com/satijalab/seurat
+
 # Quick start
 
 ## Input: 
 
-* a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
+* a general output of 10X pipeline, for example, a directory includes a file named as filtered_feature_bc_matrix.h5, a directory named as spatial with at least four files: tissue_positions_list.csv, tissue_lowres_image.png, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
-* with the example file of slice 151673 as an example, you can download it by the following code:
+* take slice 151673 as an example, you can download it by the following code:
+
 ```
 wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
 
 unzip stMVC_test_data.zip
+
 ```
+
 ## Run: 
 
-### Preprocess data
-This function automatically learns 50-dimensional features from 2000 highly variable genes of gene expression data, trains SimCLR model (500 iterations) by data augmentations and constrative learning and extracts 2048-dimensional visual featus from histological data, and saves physical location of each spot into a file 'Spot_location.csv' into spatial folder of current directory.
+### step 1. Preprocess raw data
+
+This function automatically (1) learns 50-dimensional features from 2000 highly variable genes of gene expression data, (2) trains SimCLR model (500 iterations) by data augmentations and constrative learning and extracts 2048-dimensional visual featus from histological data, and (3) saves physical location of each spot into a file 'Spot_location.csv' into spatial folder of current directory.
 
 ```
-python Preprcessing_stMVC.py
-```
-The running time dependeds on the iteration of SimCLR training. It takes 3.7h to generate the files needed.
+python Preprcessing_stMVC.py --basePath ./stMVC_test_data/DLPFC_151673/ 
 
-### run stMVC model
-
-This function automatically learns robust representations by multi-view graph collaborative learning. It takes 7.3min.
-```
-python main_stMVC_DLPFC.py
 ```
 
-## Useful paramters:
+The running time mainly depends on the iteration of SimCLR training. It takes 3.7h to generate the files needed. You can modify the following parameters to reduce time:
 
-* modify the initial learning rate paramters for learning view-specific representations by single-view graph and robust representations by multi-view graph. i.e., lr_T1 for HSG, lr_T2 for SLG, lr_T3 for collaborative learning. The default value of three parameters is 0.002. You can adjust them from 0.001 to 0.003 by 0.001;
+* batch_size_I: defines the batch size for training SimCLR model. The default value is 128. You can modify it based on your memory size. The larger the parameter, the less time.
+
+* max_epoch_I: defines the max iteration for training SimCLR model. The default value is 500. You can modify it. The smaller the parameter, the less time.
+
+To reproduce result, you should use the default parameters.
+
+Note: to reduce the waitting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step3.
+
+### step 2. Manual cell segmentation (for OEAD and IDC dataset)
+
+This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ XX mins.
+
+* run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json'.
+
+* defines the classification for each spot based on above generated json file. Here, we used IDC dataset as an exmaple.
+
+```
+python Image_cell_segmentation.py --basePath ./stMVC_test_data/IDC/ --jsonFile tissue_hires_image.json
+
+```
+Note: to help you reduce the waitting time, we have uploaded tissue_hires_image.json and propressed result from step 1. You can directly perform step3.
+
+### step 3. Run stMVC model
+
+This function automatically learns robust representations by multi-view graph collaborative learning. It takes ~7 min.
+
+```
+python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/ 
+
+```
+In running, the useful parameters:
+
+* lr_T1 for HSG, lr_T2 for SLG, lr_T3 for collaborative learning: defines learning rate paramters for learning view-specific representations by single-view graph and robust representations by multi-view graph. i.e., . The default value of three parameters is 0.002. You can adjust them from 0.001 to 0.003 by 0.001;
+
+* max_epoch_T: defines the max iteration for training view-specific graph or multi-view graph. The default value is 500. You can modify it. The larger the parameter, the more time.
+
+* beta_pa: defines the penaly for the knowledge transfer from robust representations to view-specific representations. The default value is 8.
+
+* knn: defines the K-nearst similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearst spots includes itself. 
+
+To reproduce result, you should use the default parameters.
 
 ## Output:
 
@@ -77,11 +123,12 @@ python main_stMVC_DLPFC.py
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
-# Reference
+# References
 
-1. AE:
-2. GAT:
-3. SimCLR:
+* MVE: https://github.com/mnqu/MVE
+* GAT: https://github.com/gordicaleksa/pytorch-GAT
+* SimCLR: https://github.com/google-research/simclr
+* stLearn: https://github.com/BiomedicalMachineLearning/stLearn
 
 # Citation
 
