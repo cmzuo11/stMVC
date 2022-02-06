@@ -46,7 +46,7 @@ Installation was tested on Windows 10 with Intel Core i7-4790 CPU, and the label
 
 # Quick start
 
-## Input: 
+## Input
 
 * a general output of 10X pipeline, for example, a directory includes a file named filtered_feature_bc_matrix.h5, a directory named spatial with five files: tissue_positions_list.csv, tissue_lowres_image.png, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
@@ -60,7 +60,7 @@ unzip stMVC_test_data.zip
 
 Note: the folder named 'DLPFC_151673' is the raw data of slice 151673.
 
-## Run: 
+## Run
 
 ### step 1. Preprocess raw data
 
@@ -112,7 +112,7 @@ In running, the useful parameters:
 
 To reproduce the result, you should use the default parameters.
 
-## Output:
+## Output
 
 ## the output file will be saved for further analysis:
 
@@ -120,12 +120,24 @@ To reproduce the result, you should use the default parameters.
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
+## Further analysis
+
+Some functions based on file named GAT_2-view_robust_representation.csv for further analysis.
+
+* knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
+
+* Seurat_processing: clustering, visualization and differential analysis by Seurat package.
+
 # References
 
 * MVE: https://github.com/mnqu/MVE
+
 * GAT: https://github.com/gordicaleksa/pytorch-GAT
+
 * SimCLR: https://github.com/google-research/simclr
+
 * stLearn: https://github.com/BiomedicalMachineLearning/stLearn
+
 * DCCA: https://github.com/cmzuo11/DCCA
 
 # Citation
