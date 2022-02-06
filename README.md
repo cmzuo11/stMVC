@@ -100,7 +100,7 @@ Note: To reduce your waiting time, we have uploaded the tissue_hires_image.json 
 This function automatically learns robust representations by multi-view graph collaborative learning. It takes ~7 min.
 
 ```
-python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/ 
+python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/ --fusion_type Attention
 ```
 In running, the useful parameters:
 
@@ -115,6 +115,8 @@ In running, the useful parameters:
 * cluster_pre: defines the number of cell segmentation (classes). Here, the default value of the DLPFC and IDC datasets is 7 and 16, respectively. You can modify it based on your data.
 
 * latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of the DLPFC and IDC datasets is 25 and 10, 32 and 16, respectively.
+
+* fusion_type: definies the multi-view graph fusion types. The default value is Attention, you can use Mean to perform stMVC-M
 
 To reproduce the result, you should use the default parameters.
 
