@@ -40,17 +40,17 @@ Installation was tested on Windows 10 with Intel Core i7-4790 CPU, and the label
 
 ## Install R packages 
 
-* install tested on R =4.0.0
+* Install tested on R =4.0.0
 
-* install package 'Seurat' based on the Github https://github.com/satijalab/seurat
+* Install package 'Seurat' based on the Github https://github.com/satijalab/seurat
 
 # Quick start
 
 ## Input
 
-* a general output of 10X pipeline, for example, a directory includes a file named filtered_feature_bc_matrix.h5, a directory named spatial with five files: tissue_positions_list.csv, tissue_lowres_image.png, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
+* A general output of 10X pipeline, for example, a directory includes a file named filtered_feature_bc_matrix.h5, a directory named spatial with five files: tissue_positions_list.csv, tissue_lowres_image.png, tissue_hires_image.png, metrics_summary_csv.csv, scalefactors_json.json, and a directory named as filtered_feature_bc_matrix with three files: matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz;  
 
-* take slice 151673 as an example, you can download it by the following scripts:
+* Take slice 151673 as an example, you can download it by the following scripts:
 
 ```
 wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
@@ -58,7 +58,7 @@ wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
 unzip stMVC_test_data.zip
 ```
 
-Note: the folder named 'DLPFC_151673' is the raw data of slice 151673.
+Note: The folder named 'DLPFC_151673' is the raw data of slice 151673.
 
 ## Run
 
@@ -84,9 +84,9 @@ Note: To reduce your waiting time, we have uploaded our preprocessed data into t
 
 This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ 35 mins.
 
-* run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json' of a directory named image_segmentation.
+* Run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json' of a directory named image_segmentation.
 
-* defines the classification for each spot based on above-generated json file. Here, we used IDC dataset as an example.
+* Define the classification for each spot based on above-generated json file. Here, we use IDC dataset as an example.
 
 ```
 python Image_cell_segmentation.py --basePath ./stMVC_test_data/IDC/ --jsonFile tissue_hires_image.json
