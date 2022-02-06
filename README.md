@@ -78,20 +78,20 @@ The running time mainly depends on the iteration of SimCLR training. It takes 3.
 
 To reproduce the result, you should use the default parameters.
 
-Note: To reduce the waiting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step3.
+Note: To reduce your waiting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step 3.
 
 ### step 2. Manual cell segmentation (for OEAD and IDC dataset)
 
 This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ XX mins.
 
-* run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json'.
+* run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json' of a directory named image_segmentation.
 
 * defines the classification for each spot based on above-generated json file. Here, we used IDC dataset as an example.
 
 ```
 python Image_cell_segmentation.py --basePath ./stMVC_test_data/IDC/ --jsonFile tissue_hires_image.json
 ```
-Note: To reduce the waiting time, we have uploaded the tissue_hires_image.json and the processed result from step 1 into a folder named IDC. You can directly perform step3.
+Note: To reduce your waiting time, we have uploaded the tissue_hires_image.json and the processed result from step 1 into a folder named IDC. You can directly perform step 3.
 
 ### step 3. Run stMVC model
 
@@ -104,9 +104,9 @@ In running, the useful parameters:
 
 * lr_T1 for HSG, lr_T2 for SLG, lr_T3 for collaborative learning: defines learning rate parameters for learning view-specific representations by single-view graph and robust representations by multi-view graph. i.e., . The default value of three parameters is 0.002. You can adjust them from 0.001 to 0.003 by 0.001;
 
-* max_epoch_T: defines the max iteration for training view-specific graph or multi-view graph. The default value is 500. You can modify it. The larger the parameter, the more time.
+* max_epoch_T: defines the max iteration for training view-specific graph or multi-view graphs. The default value is 500. You can modify it. The larger the parameter, the more time.
 
-* beta_pa: defines the penaly for the knowledge transfer from robust representations to view-specific representations. The default value is 8.
+* beta_pa: defines the penalty for the knowledge transfer from robust representations to view-specific representations. The default value is 8.
 
 * knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots includes itself. 
 
