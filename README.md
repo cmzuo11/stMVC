@@ -124,6 +124,8 @@ To reproduce the result, you should use the default parameters.
 
 * GAT_2-view_robust_representation.csv: robust representations for latter clustering, visualization, and data denoising.
 
+* ......
+
 ## Further analysis
 
 Some functions are based on the file named GAT_2-view_robust_representation.csv for further analysis.
