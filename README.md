@@ -55,7 +55,7 @@ Installation was tested on Windows 10 with Intel Core i7-4790 CPU, and the label
 * Take slice 151673 as an example, you can download it by the following scripts:
 
 ```
-wget https://zenodo.org/record/5984521/files/stMVC_test_data.zip
+wget https://zenodo.org/record/5985525/files/stMVC_test_data.zip
 
 unzip stMVC_test_data.zip
 ```
