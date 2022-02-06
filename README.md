@@ -126,7 +126,7 @@ To reproduce the result, you should use the default parameters.
 
 ## Further analysis
 
-Some functions are based on the file named GAT_2-view_robust_representation.csv for further analysis.
+Some functions from R file named Preprocessing.R (in Utilities folder) are based on the file named GAT_2-view_robust_representation.csv for further analysis.
 
 * knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
 
