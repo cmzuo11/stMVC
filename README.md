@@ -34,7 +34,7 @@ conda activate stMVC
 pip install -r used_package.txt
 ```
 
-## Install histological label software (labelme) 
+## Install histological image annotation software (labelme) 
 
 Installation was tested on Windows 10 with Intel Core i7-4790 CPU, and the labelme software is available at Github: https://github.com/wkentaro/labelme
 
