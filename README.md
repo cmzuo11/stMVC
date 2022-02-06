@@ -130,11 +130,41 @@ To reproduce the result, you should use the default parameters.
 
 ## Further analysis
 
-Some functions from R file named Preprocessing.R (in Utilities folder) are based on the file named GAT_2-view_robust_representation.csv for further analysis.
+Some functions from R file named Postprocessing.R (in stMVC folder) are based on the file named GAT_2-view_robust_representation.csv for further analysis.
+
+* Seurat_processing: clustering, visualization and differential analysis by Seurat package.
+
+```
+#Generate pdf file includes clustering and visualization 
+library('Seurat')
+library('ggplot2')
+source(./stMVC/Postprocessing.R)
+basePath       = "./stMVC_test_data/DLPFC_151673/stMVC"
+robust_rep     = read.csv( paste0(basePath, "GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
+Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC_clustering.pdf" )
+```
 
 * knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
 
-* Seurat_processing: clustering, visualization and differential analysis by Seurat package.
+```
+#data denoising based on 15 nearest neighboring spots
+input_features = as.matrix(robust_rep[match(colnames(Seurat_obj), row.names(robust_rep)),])
+Seurat_obj     = FindVariableFeatures(Seurat_obj, nfeatures=2000)
+hvg            = VariableFeatures(Seurat_obj)
+rna_data       = as.matrix(Seurat_obj@assays$Spatial@counts)
+hvg_data       = rna_data[match(hvg, row.names(rna_data)), ]
+
+mat_smooth     = knn_smoothing( hvg_data, 15, input_features )
+colnames(mat_smooth) = colnames(Seurat_obj)
+
+#find spatially variable genes
+Seurat_smooth         = CreateSeuratObject(counts=mat_smooth, assay='Spatial')
+Idents(Seurat_smooth) = Idents(Seurat_obj)
+
+Seurat_smooth = SCTransform(Seurat_smooth, assay = "Spatial", verbose = FALSE)
+top_markers   = FindAllMarkers(Seurat_smooth, assay='SCT', slot='data', only.pos=TRUE) 
+Seurat_smooth[["clusterings"]] = as.numeric(as.character(Idents(Seurat_smooth)))+1
+```
 
 * ......
 
