@@ -110,6 +110,10 @@ In running, the useful parameters:
 
 * knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots includes itself. 
 
+* cluster_pre: defines the number of cell segmentation (classes). Here, the default value of DLPFC and IDC dataset is 7 and 16, respectively. You can modify it based on your data.
+
+* latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of DLPFC and IDC dataset is 25 and 10, 32 and 16, respectively.
+
 To reproduce the result, you should use the default parameters.
 
 ## Output
