@@ -102,17 +102,17 @@ python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/
 ```
 In running, the useful parameters:
 
-* lr_T1 for HSG, lr_T2 for SLG, lr_T3 for collaborative learning: defines learning rate parameters for learning view-specific representations by single-view graph and robust representations by multi-view graph. i.e., . The default value of three parameters is 0.002. You can adjust them from 0.001 to 0.003 by 0.001;
+* lr_T1 for HSG, lr_T2 for SLG, lr_T3 for collaborative learning: defines learning rate parameters for learning view-specific representations by single-view graph and robust representations by multi-view graph. i.e., . The default value of the three parameters is 0.002. You can adjust them from 0.001 to 0.003 by 0.001;
 
 * max_epoch_T: defines the max iteration for training view-specific graph or multi-view graphs. The default value is 500. You can modify it. The larger the parameter, the more time.
 
 * beta_pa: defines the penalty for the knowledge transfer from robust representations to view-specific representations. The default value is 8.
 
-* knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots includes itself. 
+* knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots for a spot include itself. 
 
-* cluster_pre: defines the number of cell segmentation (classes). Here, the default value of DLPFC and IDC dataset is 7 and 16, respectively. You can modify it based on your data.
+* cluster_pre: defines the number of cell segmentation (classes). Here, the default value of the DLPFC and IDC datasets is 7 and 16, respectively. You can modify it based on your data.
 
-* latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of DLPFC and IDC dataset is 25 and 10, 32 and 16, respectively.
+* latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of the DLPFC and IDC datasets is 25 and 10, 32 and 16, respectively.
 
 To reproduce the result, you should use the default parameters.
 
@@ -126,7 +126,7 @@ To reproduce the result, you should use the default parameters.
 
 ## Further analysis
 
-Some functions based on file named GAT_2-view_robust_representation.csv for further analysis.
+Some functions are based on the file named GAT_2-view_robust_representation.csv for further analysis.
 
 * knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
 
