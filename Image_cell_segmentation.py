@@ -96,3 +96,4 @@ data_frame   = pd.DataFrame(data=df, index = cell_names ).to_csv( imageSeg_dir +
 
 duration     = time.time() - start
 print('Finish training, total time is: ' + str(duration) + 's' )
+
