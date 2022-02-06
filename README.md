@@ -2,7 +2,7 @@
 
 ![image](https://github.com/cmzuo11/stMVC/blob/main/Utilities/Main_figure_stMVC.png)
 
-Overview of stMVC model. a Given each spatially resolved transcriptomics (SRT) data data with four-layer profiles: histological images (I), spatial locations (S), gene expression (X), and manual cell segmentation (Y) as the input, stMVC integrated them to disentangle tissue heterogeneity, particularly for the tumor. b stMVC adopted SimCLR model with feature extraction framework from ResNet-50 to efficiently learn visual features (h_i) for each spot (v_i) by maximizing agreement between differently augmented views of the same spot image (I_i) via a contrastive loss in the latent space (l_i), and then constructed HSG by the learned visual features h_i. c stMVC model adopting a SGATE learned view-specific representations (〖P_i〗^1 and 〖P_i〗^2) for each of two graphs including HSG and SLG, as well as the latent feature from gene expression data by the autoencoder-based framework as a feature matrix, where a SGATE for each view was trained under weak supervision of the cell segmentation to capture its efficient low-dimensional manifold structure, and simultaneously integrated two-view graphs for robust representations (R_i) by learning weights of different views via attention mechanism. d Robust representations R_i can be used for elucidating tumor heterogeneity: detecting spatial domains, visualizing the relationship distance between different domains, and further denoising data.
+Overview of stMVC model. (a) Given each spatially resolved transcriptomics (SRT) data data with four-layer profiles: histological images (I), spatial locations (S), gene expression (X), and manual cell segmentation (Y) as the input, stMVC integrated them to disentangle tissue heterogeneity, particularly for the tumor. (b) stMVC adopted SimCLR model with feature extraction framework from ResNet-50 to efficiently learn visual features (h_i) for each spot (v_i) by maximizing agreement between differently augmented views of the same spot image (I_i) via a contrastive loss in the latent space (l_i), and then constructed HSG by the learned visual features h_i. (c) stMVC model adopting a SGATE learned view-specific representations (〖P_i〗^1 and 〖P_i〗^2) for each of two graphs including HSG and SLG, as well as the latent feature from gene expression data by the autoencoder-based framework as a feature matrix, where a SGATE for each view was trained under weak supervision of the cell segmentation to capture its efficient low-dimensional manifold structure, and simultaneously integrated two-view graphs for robust representations (R_i) by learning weights of different views via attention mechanism. (d) Robust representations R_i can be used for elucidating tumor heterogeneity: detecting spatial domains, visualizing the relationship distance between different domains, and further denoising data.
 
 # Installation
 
@@ -10,7 +10,7 @@ Overview of stMVC model. a Given each spatially resolved transcriptomics (SRT) d
 
 Installation was tested on Red Hat 7.6 with Python 3.6.12 and torch 1.6.0 on a machine with one 40-core Intel(R) Xeon(R) Gold 5115 CPU addressing with 132GB RAM, and two NVIDIA TITAN V GPU addressing 24GB. stMVC is implemented in the Pytorch framework. Please run stMVC on CUDA if possible. 
 
-#### 1. grab source code of stMVC
+#### 1. Grab source code of stMVC
 
 ```
 git clone https://github.com/cmzuo11/stMVC.git
@@ -18,7 +18,7 @@ git clone https://github.com/cmzuo11/stMVC.git
 cd stMVC
 ```
 
-#### 2. install stMVC in the virtual environment by conda 
+#### 2. Install stMVC in the virtual environment by conda 
 
 * Firstly, install conda: https://docs.anaconda.com/anaconda/install/index.html
 
