@@ -82,7 +82,7 @@ To reproduce the result, you should use the default parameters.
 
 Note: To reduce your waiting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step 3.
 
-### Step 2. Manual cell segmentation (for OEAD and IDC dataset)
+### Step 2. Manual cell segmentation (for IDC dataset)
 
 This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ 35 mins.
 
