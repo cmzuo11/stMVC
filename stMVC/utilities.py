@@ -49,7 +49,7 @@ def parameter_setting():
 	parser.add_argument('--weight_decay', type=float, default = 1e-6, help='weight decay')
 	parser.add_argument('--eps', type=float, default = 0.01, help='eps')
 
-	parser.add_argument('--cluster_pre', '-clup', type=int, default=7, help='predefined cluster for scRNA')
+	parser.add_argument('--cluster_pre', '-clup', type=int, default=10, help='predefined cluster for scRNA')
 	parser.add_argument('--geneClu', '-gClu', type=list, default = None, help='predefined gene cluster for scRNA')
 	parser.add_argument('--beta_pa', '-bePa', type=float, default = 0.0005, help='parameter for robust representation loss')
 	
