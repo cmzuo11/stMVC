@@ -148,4 +148,4 @@ Some functions are based on the file named GAT_2-view_robust_representation.csv 
 
 # Citation
 
-Chunman Zuo^*, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen^*. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
+Chunman Zuo*, Yijian Zhang, Chen Cao, Jinwang Feng, Mingqi Jiao, and Luonan Chen*. Elucidating tumor heterogeneity from spatially resolved transcriptomics data by multi-view graph collaborative learning. 2022. (submitted).
