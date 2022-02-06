@@ -112,8 +112,6 @@ In running, the useful parameters:
 
 * knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots for a spot include itself. 
 
-* cluster_pre: defines the number of cell segmentation (classes). Here, the default value of the DLPFC and IDC datasets is 7 and 16, respectively. You can modify it based on your data.
-
 * latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of the DLPFC and IDC datasets is 25 and 10, 32 and 16, respectively.
 
 * fusion_type: definies the multi-view graph fusion types. The default value is Attention, you can use Mean to perform stMVC-M
@@ -139,9 +137,9 @@ Some functions from R file named Postprocessing.R (in stMVC folder) are based on
 library('Seurat')
 library('ggplot2')
 source(./stMVC/Postprocessing.R)
-basePath       = "./stMVC_test_data/DLPFC_151673/stMVC/"
-robust_rep     = read.csv( paste0(basePath, "GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
-Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC_clustering.pdf" )
+basePath       = "./stMVC_test_data/DLPFC_151673/"
+robust_rep     = read.csv( paste0(basePath, "stMVC/GAT_2-view_robust_representation.csv"), header = T, row.names = 1)
+Seurat_obj     = Seurat_processing(basePath, robust_rep, 10, 7, basePath, "stMVC/stMVC_clustering.pdf" )
 ```
 
 * knn_smoothing: data denoising by its 15 nearest neighboring spots that are calculated based on the distance of robust representations between any two spots.
