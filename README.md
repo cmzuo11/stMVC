@@ -44,6 +44,8 @@ Installation was tested on Windows 10 with Intel Core i7-4790 CPU, and the label
 
 * Install package 'Seurat' based on the Github https://github.com/satijalab/seurat
 
+* install.packages("ggplot2")
+
 # Quick start
 
 ## Input
