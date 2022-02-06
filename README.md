@@ -163,7 +163,6 @@ Idents(Seurat_smooth) = Idents(Seurat_obj)
 
 Seurat_smooth = SCTransform(Seurat_smooth, assay = "Spatial", verbose = FALSE)
 top_markers   = FindAllMarkers(Seurat_smooth, assay='SCT', slot='data', only.pos=TRUE) 
-Seurat_smooth[["clusterings"]] = as.numeric(as.character(Idents(Seurat_smooth)))+1
 ```
 
 * ......
