@@ -59,6 +59,8 @@ python Preprcessing_stMVC.py
 The running time dependeds on the iteration of SimCLR training. It takes 3.7h to generate the files needed.
 
 ### run stMVC model
+
+This function automatically learns robust representations by multi-view graph collaborative learning. It takes 7.3min.
 ```
 python main_stMVC_DLPFC.py
 ```
