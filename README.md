@@ -82,7 +82,7 @@ Note: To reduce your waiting time, we have uploaded our preprocessed data into t
 
 ### step 2. Manual cell segmentation (for OEAD and IDC dataset)
 
-This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ XX mins.
+This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ 35 mins.
 
 * run lableme software, manual outline each tumor region based on our defined strategy, and save the annotation into a json file named 'tissue_hires_image.json' of a directory named image_segmentation.
 
