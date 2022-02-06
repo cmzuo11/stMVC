@@ -226,4 +226,3 @@ def extract_representation_simCLR_model( args, outDir = 'results', model_file = 
 
 	return save_fileName
 
-
