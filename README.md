@@ -32,7 +32,6 @@ source activate
 conda activate stMVC
 
 pip install -r used_package.txt
-
 ```
 
 ## Install histological label software (labelme) 
@@ -57,7 +56,6 @@ Installation tested on Windows 10 with Intel Core i7-4790 CPU, and the labelme s
 wget https://zenodo.org/record/5977605/files/stMVC_test_data.zip
 
 unzip stMVC_test_data.zip
-
 ```
 
 ## Run: 
@@ -68,7 +66,6 @@ This function automatically (1) learns 50-dimensional features from 2000 highly 
 
 ```
 python Preprcessing_stMVC.py --basePath ./stMVC_test_data/DLPFC_151673/ 
-
 ```
 
 The running time mainly depends on the iteration of SimCLR training. It takes 3.7h to generate the files needed. You can modify the following parameters to reduce time:
@@ -91,7 +88,6 @@ This function defines the classification of each spot based on our manual cell s
 
 ```
 python Image_cell_segmentation.py --basePath ./stMVC_test_data/IDC/ --jsonFile tissue_hires_image.json
-
 ```
 Note: to help you reduce the waitting time, we have uploaded tissue_hires_image.json and propressed result from step 1. You can directly perform step3.
 
@@ -101,7 +97,6 @@ This function automatically learns robust representations by multi-view graph co
 
 ```
 python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/ 
-
 ```
 In running, the useful parameters:
 
