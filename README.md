@@ -51,9 +51,12 @@ unzip stMVC_test_data.zip
 ## Run: 
 
 ### Preprocess data
+This function automatically learns 50-dimensional features from 2000 highly variable genes of gene expression data, trains SimCLR model (500 iterations) by data augmentations and constrative learning and extracts 2048-dimensional visual featus from histological data, and saves physical location of each spot into a file 'Spot_location.csv' into spatial folder of current directory.
+
 ```
 python Preprcessing_stMVC.py
 ```
+The running time dependeds on the iteration of SimCLR training. It takes 3.7h to generate the files needed.
 
 ### run stMVC model
 ```
