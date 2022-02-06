@@ -62,7 +62,7 @@ Note: the folder named 'DLPFC_151673' is the raw data of slice 151673.
 
 ## Run
 
-### step 1. Preprocess raw data
+### Step 1. Preprocess raw data
 
 This function automatically (1) learns 50-dimensional features from 2000 highly variable genes of gene expression data, (2) trains SimCLR model (500 iterations) by data augmentations and contrastive learning and extracts 2048-dimensional visual features from histological data, and (3) saves the physical location of each spot into a file 'Spot_location.csv' into a folder named spatial of the current directory.
 
@@ -80,7 +80,7 @@ To reproduce the result, you should use the default parameters.
 
 Note: To reduce your waiting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step 3.
 
-### step 2. Manual cell segmentation (for OEAD and IDC dataset)
+### Step 2. Manual cell segmentation (for OEAD and IDC dataset)
 
 This function defines the classification of each spot based on our manual cell segmentation by labelme software, and saves the cell segmentation file (Image_cell_segmentation_0.5.csv) into the 'image_segmentation' directory. It takes ~ 35 mins.
 
@@ -93,7 +93,7 @@ python Image_cell_segmentation.py --basePath ./stMVC_test_data/IDC/ --jsonFile t
 ```
 Note: To reduce your waiting time, we have uploaded the tissue_hires_image.json and the processed result from step 1 into a folder named IDC. You can directly perform step 3.
 
-### step 3. Run stMVC model
+### Step 3. Run stMVC model
 
 This function automatically learns robust representations by multi-view graph collaborative learning. It takes ~7 min.
 
@@ -118,7 +118,7 @@ To reproduce the result, you should use the default parameters.
 
 ## Output
 
-## the output file will be saved for further analysis:
+## Output file will be saved for further analysis:
 
 * GAT_2-view_model.pth: a saved model for reproducing results.
 
