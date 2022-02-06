@@ -55,4 +55,3 @@ def Extract_representation( args, outDir = 'results' ):
 	data_frame = pd.DataFrame(data=feature_dim, index=barcode, columns =  list(range(1, 2049)) )
 	data_frame.to_csv( outDir + '/resnet50_reprensentation.csv')
 
-
