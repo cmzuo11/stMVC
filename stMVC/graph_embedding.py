@@ -158,10 +158,10 @@ def Multi_views_attention_train(args, image_rep_file = None, RNA_file = None, im
 	data_frame  = pd.DataFrame(data=mu_robust1.data.cpu().numpy(), index=rna_data.index ).to_csv( outDir + 
 							   '/{}_2-view_robust_representation.csv'.format( "GAT" ) ) 
 
-	if integrate_type != "NN":
-		data_frame  = pd.DataFrame(data=lamda.data.cpu().numpy(), index=rna_data.index ).to_csv( outDir + 
-								   '/{}_2-view_lamda_coefficients.csv'.format( "GAT" ) ) 
+	#if integrate_type != "NN":
+	#	data_frame  = pd.DataFrame(data=lamda.data.cpu().numpy(), index=rna_data.index ).to_csv( outDir + 
+	#							   '/{}_2-view_lamda_coefficients.csv'.format( "GAT" ) ) 
 
-	data_frame  = pd.DataFrame(data=class_prediction.data.cpu().numpy(), index=rna_data.index ).to_csv( outDir + 
-							   '/{}_2-view_class_prediction.csv'.format( "GAT" ) ) 
+	#data_frame  = pd.DataFrame(data=class_prediction.data.cpu().numpy(), index=rna_data.index ).to_csv( outDir + 
+	#						   '/{}_2-view_class_prediction.csv'.format( "GAT" ) ) 
 
