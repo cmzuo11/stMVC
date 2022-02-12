@@ -58,8 +58,8 @@ def parameter_setting():
 	parser.add_argument('--batch_size_I', '-bI', type=int, default=128, help='Batch size for spot image data')
 	parser.add_argument('--image_size', '-iS', type=int, default=32, help='image size for spot image data')
 
-	parser.add_argument('--latent_T1', '-lT1',type=int, default=25, help='Feature dim1 for latent vector for transcriptomics data')
-	parser.add_argument('--latent_T2', '-lT2',type=int, default=10, help='Feature dim2 for latent vector for transcriptomics data')
+	parser.add_argument('--latent_T1', '-lT1',type=int, default=32, help='Feature dim1 for latent vector for transcriptomics data')
+	parser.add_argument('--latent_T2', '-lT2',type=int, default=16, help='Feature dim2 for latent vector for transcriptomics data')
 	parser.add_argument('--latent_I', '-lI',type=int, default=128, help='Feature dim for latent vector for spot image data')
 
 	parser.add_argument('--max_epoch_T', '-meT', type=int, default=500, help='Max epoches for transcriptomics data')
