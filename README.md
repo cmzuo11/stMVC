@@ -60,7 +60,7 @@ wget https://zenodo.org/record/5985525/files/stMVC_test_data.zip
 unzip stMVC_test_data.zip
 ```
 
-Note: The folder named 'DLPFC_151673' is the raw data of slice 151673.
+Note: The folder named 'DLPFC_151673' contains the raw data of slice 151673.
 
 ## Run
 
@@ -80,7 +80,7 @@ The running time mainly depends on the iteration of SimCLR training. It takes 3.
 
 To reproduce the result, you should use the default parameters.
 
-Note: To reduce your waiting time, we have uploaded our preprocessed data into the ./stMVC_test_data/DLPFC_151673/stMVC/ folder. You can directly perform step 3.
+Note: To reduce your waiting time, we have uploaded our preprocessed data into the folder ./stMVC_test_data/DLPFC_151673/stMVC/. You can directly perform step 3.
 
 ### Step 2. Manual cell segmentation (for IDC dataset)
 
