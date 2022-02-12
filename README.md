@@ -97,7 +97,7 @@ Note: To reduce your waiting time, we have uploaded the tissue_hires_image.json 
 
 ### Step 3. Run stMVC model
 
-This function automatically learns robust representations by multi-view graph collaborative learning. It takes ~7 min.
+This function automatically learns robust representations by multi-view graph collaborative learning. It takes ~7 mins for DLPFC_151673 and ~9 mins for IDC.
 
 ```
 python stMVC_model.py --basePath ./stMVC_test_data/DLPFC_151673/ --fusion_type Attention
