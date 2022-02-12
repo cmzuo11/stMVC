@@ -110,7 +110,9 @@ In running, the useful parameters:
 
 * beta_pa: defines the penalty for the knowledge transfer from robust representations to view-specific representations. The default value is 8.
 
-* knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots for a spot include itself. 
+* knn: defines the K-nearest similarity spots for each spot to construct HSG or SLG. The default value is 7 where the K-nearest spots for a spot include itself.
+
+* latent_T1 and latent_T2 define the dimension of two layers of GAT for SGATE model. Here, the default value of the DLPFC and IDC datasets is 25 and 10, 32 and 16, respectively.
 
 * fusion_type: definies the multi-view graph fusion types. The default value is Attention, you can use Mean to perform stMVC-M
 
