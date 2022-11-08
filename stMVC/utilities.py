@@ -156,8 +156,11 @@ def load_HSG_SLG_by_feature_data( image_loc_file  = None,
 
 	row_index    = []
 	col_index    = []
-
-	sorted_knn   = dist_out.argsort(axis=1)
+	
+	if disatnce_method=="cosine":
+		sorted_knn   = np.argsort(-dist_out)
+	else:
+		sorted_knn   = np.argsort(dist_out)
 
 	for index in list(range( np.shape(dist_out)[0] )):
 		col_index.extend( sorted_knn[index, :knn].tolist() )
