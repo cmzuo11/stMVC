@@ -41,12 +41,12 @@ def RNA_encoding_train(args, adata = None, outDir = None, test_size_prop = 0.1):
 	Nsample1, Nfeature1 =  np.shape( adata.X )
 
 	train           = data_utils.TensorDataset( torch.from_numpy( sp.csr_matrix.toarray(adata[train_index].X) ),
-												torch.from_numpy( sp.csr_matrix.toarray(adata[train_index].X) ), 
+												torch.from_numpy( sp.csr_matrix.toarray(adata.raw[train_index].X) ), 
 												torch.from_numpy( adata.obs['size_factors'][train_index].values ) )
 	train_loader    = data_utils.DataLoader( train, batch_size = args.batch_size_T, shuffle = True )
 
 	test            = data_utils.TensorDataset( torch.from_numpy( sp.csr_matrix.toarray(adata[test_index].X) ),
-												torch.from_numpy( sp.csr_matrix.toarray(adata[test_index].X) ), 
+												torch.from_numpy( sp.csr_matrix.toarray(adata.raw[test_index].X) ), 
 												torch.from_numpy( adata.obs['size_factors'][test_index].values ) )
 	test_loader     = data_utils.DataLoader( test, batch_size = len(test_index), shuffle = False )
 
